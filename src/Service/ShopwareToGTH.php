@@ -35,10 +35,10 @@ class ShopWareToGTH
         $this->systemConfigService = $systemConfigService;
         $this->orderRepository = $orderRepository;
         
-        $this->gthEnv = $this->systemConfigService->get('GreenToHome.config.gthEnvironment');
-        $this->apiKey = $this->systemConfigService->get('GreenToHome.config.apikey');
-        $this->customParcelIdField = $this->systemConfigService->get('GreenToHome.config.parcelIdFieldName') ?? 'custom_gth_ParcelID';
-        $this->customStickerUrlField = $this->systemConfigService->get('GreenToHome.config.stickerUrlFieldName') ?? 'custom_gth_StickerUrl';
+        $this->gthEnv = $systemConfigService->get('GreenToHome.config.gthEnvironment');
+        $this->apiKey = $systemConfigService->get('GreenToHome.config.apikey');
+        $this->customParcelIdField = $systemConfigService->get('GreenToHome.config.parcelIdFieldName') ?? 'custom_gth_ParcelID';
+        $this->customStickerUrlField = $systemConfigService->get('GreenToHome.config.stickerUrlFieldName') ?? 'custom_gth_StickerUrl';
     }
 
     private function getUnsubmittedOrders(): EntitySearchResult
