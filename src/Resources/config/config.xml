@@ -22,7 +22,7 @@
                 <option>
                     <id>dev</id>
                     <name>DEV Server</name>
-                    <name lang="de-DE">DEV Server</name>
+                    <name lang="de-DE">Local Server</name>
                 </option>
                 <option>
                     <id>stage</id>
@@ -38,6 +38,20 @@
             <defaultValue>dev</defaultValue>
             <label>GTH Server Environment</label>
             <label lang="de-DE">GTH Serverumgebung</label>
+        </input-field>
+        <input-field type="text">
+            <name>parcelIdFieldName</name>
+            <copyable>true</copyable>
+            <placeholder>custom_gth_ParcelId</placeholder>
+            <label>Custom field name</label>
+            <helpText>Full name for custom field added to Order to hold GTH parcel ID</helpText>
+        </input-field>
+        <input-field type="text">
+            <name>stickerUrlFieldName</name>
+            <copyable>true</copyable>
+            <placeholder>custom_gth_StickerUrl</placeholder>
+            <label>Custom field name</label>
+            <helpText>Full name for custom field added to Order to hold GTH sticker URL</helpText>
         </input-field>
         <input-field type="password">
             <name>apikey</name>

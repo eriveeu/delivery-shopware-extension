@@ -7,18 +7,45 @@
     <services>
         <defaults autowire="true" autoconfigure="true" public="false">
         </defaults>
-        <service id="NewMobilityEnterprise\OrderSubmissionTaskTask">
-            <tag name="shopware.scheduled.task"/>
-        </service>
-        <service id="NewMobilityEnterprise\OrderSubmissionTaskTaskHandler">
-            <argument type="service" id="scheduled_task.repository"/>
+
+        <!-- <service id="NewMobilityEnterprise\GreenToHome">
+            <argument type="service" id="plugin" />
+        </service> -->
+
+        <service id="NewMobilityEnterprise\Service\ReadingData">
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService" />
-            <tag name="messenger.message_handler"/>
+            <argument type="service" id="order.repository" />
+            <argument type="service" id="order_customer.repository" />
+            <argument type="service" id="order_address.repository" />
+            <argument type="service" id="country.repository" />
         </service>
+
         <service id="NewMobilityEnterprise\Command\OrderSubmissionCommand">
-            <tag name="console.command"/>
+            <tag name="console.command" />
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService" />
-            <argument type="service" id="order.repository"/>
+            <argument type="service" id="order.repository" />
+            <argument type="service" id="order_customer.repository" />
+            <argument type="service" id="order_line_item.repository" />
+            <argument type="service" id="product.repository" />
+            <argument type="service" id="order_address.repository" />
+            <argument type="service" id="country.repository" />
         </service>
+
+        <!-- <service id="NewMobilityEnterprise\Command\OrderSubmissionCommand">
+            <tag name="console.command" />
+        </service> -->
+
+        <!-- <service id="NewMobilityEnterprise\Task\OrderSubmissionTask">
+            <tag name="shopware.scheduled.task" />
+        </service>
+
+        <service id="NewMobilityEnterprise\Task\OrderSubmissionTaskHandler">
+            <tag name="messenger.message_handler" />
+            <argument type="service" id="scheduled_task.repository" />
+        </service> -->
+
+        <!-- <service id="NewMobilityEnterprise\Subscriber\OrderModificationSubscriber">
+            <tag name="kernel.event_subscriber" />
+        </service> -->
     </services>
 </container>

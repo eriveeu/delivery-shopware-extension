@@ -1,17 +1,17 @@
 <?php declare(strict_types=1);
 
-namespace NewMobilityEnterprise;
+namespace NewMobilityEnterprise\Task;
 
 use Shopware\Core\Framework\MessageQueue\ScheduledTask\ScheduledTask;
 
 /**
  * DI Config:
  *
- * <service id="NewMobilityEnterprise\OrderSubmissionTaskTask">
+ * <service id="NewMobilityEnterprise\OrderSubmissionTask">
  * <tag name="shopware.scheduled.task"/>
  * </service>
  */
-class OrderSubmissionTaskTask extends ScheduledTask
+class OrderSubmissionTask extends ScheduledTask
 {
     public static function getTaskName(): string
     {
