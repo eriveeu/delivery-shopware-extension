@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/shopware/platform/trunk/src/Core/System/SystemConfig/Schema/config.xsd">
+
+    <card>
+        <title>Basic Configuration</title>
+        <title lang="de-DE">Grundeinstellungen</title>
+
+<!--        <input-field>-->
+<!--            <name>email</name>-->
+<!--            <copyable>true</copyable>-->
+<!--            <label>eMail address</label>-->
+<!--            <label lang="de-DE">E-Mail Adresse</label>-->
+<!--            <placeholder>you@example.com</placeholder>-->
+<!--            <placeholder lang="de-DE">du@beispiel.de</placeholder>-->
+<!--            <helpText>Please fill in your personal eMail address</helpText>-->
+<!--            <helpText lang="de-DE">Bitte trage deine persönliche E-Mail Adresse ein</helpText>-->
+<!--        </input-field>-->
+        <input-field type="single-select">
+            <name>gthEnvironment</name>
+            <options>
+                <option>
+                    <id>dev</id>
+                    <name>DEV Server</name>
+                    <name lang="de-DE">DEV Server</name>
+                </option>
+                <option>
+                    <id>stage</id>
+                    <name>STAGE Server</name>
+                    <name lang="de-DE">STAGE Server</name>
+                </option>
+                <option>
+                    <id>prod</id>
+                    <name>PROD Server</name>
+                    <name lang="de-DE">PROD Server</name>
+                </option>
+            </options>
+            <defaultValue>dev</defaultValue>
+            <label>GTH Server Environment</label>
+            <label lang="de-DE">GTH Serverumgebung</label>
+        </input-field>
+        <input-field type="password">
+            <name>apikey</name>
+            <label>API Key</label>
+            <label lang="de-DE">API Key</label>
+            <helpText>Your company api key</helpText>
+            <helpText lang="de-DE">Dein Company API Key</helpText>
+        </input-field>
+    </card>
+</config>

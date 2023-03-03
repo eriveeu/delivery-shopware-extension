@@ -1,0 +1,24 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="https://symfony.com/schema/dic/services https://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <defaults autowire="true" autoconfigure="true" public="false">
+        </defaults>
+        <service id="NewMobilityEnterprise\OrderSubmissionTaskTask">
+            <tag name="shopware.scheduled.task"/>
+        </service>
+        <service id="NewMobilityEnterprise\OrderSubmissionTaskTaskHandler">
+            <argument type="service" id="scheduled_task.repository"/>
+            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService" />
+            <tag name="messenger.message_handler"/>
+        </service>
+        <service id="NewMobilityEnterprise\Command\OrderSubmissionCommand">
+            <tag name="console.command"/>
+            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService" />
+            <argument type="service" id="order.repository"/>
+        </service>
+    </services>
+</container>
