@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace NewMobilityEnterprise\Task;
+namespace NewMobilityEnterprise\ScheduledTask;
 
 use Shopware\Core\Framework\MessageQueue\ScheduledTask\ScheduledTask;
 

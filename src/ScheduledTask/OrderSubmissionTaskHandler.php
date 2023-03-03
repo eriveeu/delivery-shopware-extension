@@ -1,14 +1,13 @@
-<?php declare(strict_types=1);
+<?php 
+declare(strict_types=1);
 
-namespace NewMobilityEnterprise\Task;
+namespace NewMobilityEnterprise\ScheduledTask;
 
-use GreenToHome\Api\CompanyApi;
 use Shopware\Core\Framework\MessageQueue\ScheduledTask\ScheduledTaskHandler;
-use Swagger\Client\Configuration;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
-use Shopware\Core\Framework\Context;
 
+use NewMobilityEnterprise\Service\ShopwareToGTH;
 
 /**
  * DI Config:
@@ -21,10 +20,14 @@ use Shopware\Core\Framework\Context;
 class OrderSubmissionTaskHandler extends ScheduledTaskHandler
 {
     private SystemConfigService $systemConfigService;
+    private EntityRepositoryInterface $orderRepository;
 
-    public function __construct(SystemConfigService $systemConfigService)
-    {
+    public function __construct(
+        SystemConfigService $systemConfigService,
+        EntityRepositoryInterface $orderRepository,
+    ) {
         $this->systemConfigService = $systemConfigService;
+        $this->orderRepository = $orderRepository;
     }
 
     public static function getHandledMessages(): iterable
@@ -34,6 +37,6 @@ class OrderSubmissionTaskHandler extends ScheduledTaskHandler
 
     public function run(): void
     {
-        //
+        (new ShopwareToGTH($this->systemConfigService, $this->orderRepository))->processAllOrders();
     }
 }
