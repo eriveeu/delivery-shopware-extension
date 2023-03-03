@@ -12,28 +12,13 @@
             <argument type="service" id="plugin" />
         </service> -->
 
-        <service id="NewMobilityEnterprise\Service\ReadingData">
-            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService" />
-            <argument type="service" id="order.repository" />
-            <argument type="service" id="order_customer.repository" />
-            <argument type="service" id="order_address.repository" />
-            <argument type="service" id="country.repository" />
-        </service>
+        <service id="NewMobilityEnterprise\Service\ShopwareToGTH" />
 
         <service id="NewMobilityEnterprise\Command\OrderSubmissionCommand">
             <tag name="console.command" />
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService" />
             <argument type="service" id="order.repository" />
-            <argument type="service" id="order_customer.repository" />
-            <argument type="service" id="order_line_item.repository" />
-            <argument type="service" id="product.repository" />
-            <argument type="service" id="order_address.repository" />
-            <argument type="service" id="country.repository" />
         </service>
-
-        <!-- <service id="NewMobilityEnterprise\Command\OrderSubmissionCommand">
-            <tag name="console.command" />
-        </service> -->
 
         <!-- <service id="NewMobilityEnterprise\Task\OrderSubmissionTask">
             <tag name="shopware.scheduled.task" />
