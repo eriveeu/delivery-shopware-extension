@@ -25,7 +25,10 @@ class OrderSubmissionTaskHandler extends ScheduledTaskHandler
     public function __construct(
         SystemConfigService $systemConfigService,
         EntityRepositoryInterface $orderRepository,
+        EntityRepository $scheduledTaskRepository,
     ) {
+        parent::__construct($scheduledTaskRepository);
+
         $this->systemConfigService = $systemConfigService;
         $this->orderRepository = $orderRepository;
     }
