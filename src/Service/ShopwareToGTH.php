@@ -143,7 +143,7 @@ class ShopWareToGTH
         return;
     }
 
-    public function processAllOrders(): int
+    public function processAllOrders(): void
     {
         $context = Context::createDefaultContext();
 
@@ -170,8 +170,53 @@ class ShopWareToGTH
 
             print_r('Order #' . $order->getOrderNumber() . ' -> GTH-Paketnummer: ' . $gthParcelId . PHP_EOL);
         }
+    }
 
-        // Exit code 0 for success
-        return 0;
+    public function processOrderById(String $id): void
+    {
+        $context = Context::createDefaultContext();
+
+        $criteria = new Criteria();
+        $criteria->addFilter(
+            new AndFilter([
+                new EqualsFilter( 'customFields.' . $this->customParcelIdField, null ),
+                new EqualsFilter( 'transactions.stateMachineState.technicalName', 'paid'),
+                new EqualsFilter( 'id', $id ),
+            ])
+        );
+        $criteria->addAssociations([
+            'lineItems.product',
+            'orderCustomer.customer',
+            'deliveries.shippingOrderAddress',
+            'deliveries.shippingOrderAddress.country',
+            'transactions.stateMachineState.technicalName'
+        ]);
+
+        $order = null;
+        try {
+            $order = $this->orderRepository->search($criteria, $context)->getEntities()->first();
+        } catch (Exception $e) {
+            dump ('Exception when searching for unsyncronized orders: ');
+            dump (e->getMessage());
+        }
+
+        if (is_null($order)) {
+            return;
+        }
+
+        $prepParcel = $this->populateGthParcel($order);
+
+        $pubParcel = $this->publishParcelToGth($prepParcel);
+
+        $gthParcelId = $pubParcel->getParcel()->getId();
+        $gthStickerUrl = $pubParcel->getParcel()->getLabelUrl();
+
+        // Set custom fields to GTH Parcel ID and Sticker URL
+        $customFields = $order->getCustomFields();
+        $customFields[$this->customParcelIdField] = $gthParcelId;
+        $customFields[$this->customStickerUrlField] = $gthStickerUrl;
+
+        // TODO : set order status to "In Progress"
+        $this->orderRepository->update([['id' => $order->getId(), 'customFields'=>$customFields]], $context);
     }
 }
