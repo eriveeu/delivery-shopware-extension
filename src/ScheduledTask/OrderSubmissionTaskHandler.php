@@ -21,16 +21,19 @@ class OrderSubmissionTaskHandler extends ScheduledTaskHandler
 {
     private SystemConfigService $systemConfigService;
     private EntityRepositoryInterface $orderRepository;
+    private $logger;
 
     public function __construct(
         SystemConfigService $systemConfigService,
         EntityRepositoryInterface $orderRepository,
         EntityRepository $scheduledTaskRepository,
+        LoggerInterface $logger,
     ) {
         parent::__construct($scheduledTaskRepository);
 
         $this->systemConfigService = $systemConfigService;
         $this->orderRepository = $orderRepository;
+        $this->logger = $logger;
     }
 
     public static function getHandledMessages(): iterable
@@ -41,5 +44,6 @@ class OrderSubmissionTaskHandler extends ScheduledTaskHandler
     public function run(): void
     {
         (new ShopwareToGTH($this->systemConfigService, $this->orderRepository))->processAllOrders();
+        $this->logger->notice('NewMobilityEnterprise: Orders parsed');
     }
 }
