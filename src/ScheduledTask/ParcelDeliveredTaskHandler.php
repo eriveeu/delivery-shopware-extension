@@ -6,8 +6,8 @@ use Shopware\Core\Framework\MessageQueue\ScheduledTask\ScheduledTaskHandler;
 use Psr\Log\LoggerInterface;
 
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
-use Shopware\Core\System\SystemConfig\SystemConfigService;
-use NewMobilityEnterprise\Service\ShopwareToGTH;
+// use Shopware\Core\System\SystemConfig\SystemConfigService;
+// use NewMobilityEnterprise\Service\ShopwareToGTH;
 
 /**
  * DI Config:
@@ -19,22 +19,22 @@ use NewMobilityEnterprise\Service\ShopwareToGTH;
  */
 class ParcelDeliveredTaskHandler extends ScheduledTaskHandler {
     private LoggerInterface $logger;
-    private SystemConfigService $systemConfigService;
 
-    private EntityRepositoryInterface $orderRepository;
+    // private SystemConfigService $systemConfigService;
+    // private EntityRepositoryInterface $orderRepository;
 
     public function __construct(
         EntityRepositoryInterface $scheduledTaskRepository,
         LoggerInterface $logger,
 
-        SystemConfigService $systemConfigService,
-        EntityRepositoryInterface $orderRepository,
+        // SystemConfigService $systemConfigService,
+        // EntityRepositoryInterface $orderRepository,
     ) {
         parent::__construct($scheduledTaskRepository);
         $this->logger = $logger;
 
-        $this->systemConfigService = $systemConfigService;
-        $this->orderRepository = $orderRepository;
+        // $this->systemConfigService = $systemConfigService;
+        // $this->orderRepository = $orderRepository;
     }
 
     public static function getHandledMessages(): iterable {
@@ -42,7 +42,7 @@ class ParcelDeliveredTaskHandler extends ScheduledTaskHandler {
     }
 
     public function run(): void {
-        $this->logger->notice('GreenToHome: Processing delivered parcels and updating order status');
+        $this->logger->notice('GreenToHome: Updating order status for delivered parcels');
         // (new ShopwareToGTH($this->systemConfigService, $this->orderRepository))->processAllOrders();
     }
 }
