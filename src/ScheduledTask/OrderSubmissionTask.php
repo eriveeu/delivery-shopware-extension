@@ -11,15 +11,12 @@ use Shopware\Core\Framework\MessageQueue\ScheduledTask\ScheduledTask;
  * <tag name="shopware.scheduled.task"/>
  * </service>
  */
-class OrderSubmissionTask extends ScheduledTask
-{
-    public static function getTaskName(): string
-    {
+class OrderSubmissionTask extends ScheduledTask {
+    public static function getTaskName(): string {
         return 'at.greentohome.ordersubmission';
     }
 
-    public static function getDefaultInterval(): int
-    {
+    public static function getDefaultInterval(): int {
         return 300;
     }
 }

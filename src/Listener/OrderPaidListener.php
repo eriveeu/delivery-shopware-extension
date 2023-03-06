@@ -9,25 +9,24 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Event\EntityWrittenEvent;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 
-class OrderPaidListener
-{
-  private $logger;
-  private SystemConfigService $systemConfigService;
+class OrderPaidListener {
+    private $logger;
+    private SystemConfigService $systemConfigService;
+    private EntityRepositoryInterface $orderRepository;
 
-  public function __construct(
-    LoggerInterface $logger,
-    SystemConfigService $systemConfigService,
-    EntityRepositoryInterface $orderRepository,
-) {
-    $this->logger = $logger;
-    $this->systemConfigService = $systemConfigService;
-    $this->orderRepository = $orderRepository;
-  }
-  
-  public function onOrderTransactionState(EntityWrittenEvent $event): void
-  {
-    $id = $event->getIds();
-    $this->logger->notice('GreenToHome: Processing order # ' . $id[0]);
-    (new ShopwareToGTH($this->systemConfigService, $this->orderRepository))->processOrderById($id[0]);
-  }
+    public function __construct(
+        LoggerInterface $logger,
+        SystemConfigService $systemConfigService,
+        EntityRepositoryInterface $orderRepository,
+    ) {
+        $this->logger = $logger;
+        $this->systemConfigService = $systemConfigService;
+        $this->orderRepository = $orderRepository;
+    }
+
+    public function onOrderTransactionState(EntityWrittenEvent $event): void {
+        $id = $event->getIds();
+        $this->logger->notice('GreenToHome: Processing order # ' . $id[0]);
+        (new ShopwareToGTH($this->systemConfigService, $this->orderRepository))->processOrderById($id[0]);
+    }
 }

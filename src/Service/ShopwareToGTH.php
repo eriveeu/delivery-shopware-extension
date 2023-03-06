@@ -1,5 +1,4 @@
-<?php 
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace NewMobilityEnterprise\Service;
 
@@ -19,8 +18,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\AndFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 
-class ShopwareToGTH
-{
+class ShopwareToGTH {
     private String $gthEnv;
     private String $apiKey;
     private String $customParcelIdField;
@@ -34,22 +32,21 @@ class ShopwareToGTH
     ) {
         $this->systemConfigService = $systemConfigService;
         $this->orderRepository = $orderRepository;
-        
+
         $this->gthEnv = $systemConfigService->get('GreenToHome.config.gthEnvironment');
         $this->apiKey = $systemConfigService->get('GreenToHome.config.apikey');
         $this->customParcelIdField = $systemConfigService->get('GreenToHome.config.parcelIdFieldName') ?? 'custom_gth_ParcelID';
         $this->customStickerUrlField = $systemConfigService->get('GreenToHome.config.stickerUrlFieldName') ?? 'custom_gth_StickerUrl';
     }
 
-    private function getUnsubmittedOrders(): EntitySearchResult
-    {
+    private function getUnsubmittedOrders(): EntitySearchResult {
         $context = Context::createDefaultContext();
 
         $criteria = new Criteria();
         $criteria->addFilter(
             new AndFilter([
-                new EqualsFilter( 'customFields.' . $this->customParcelIdField, null ),
-                new EqualsFilter( 'transactions.stateMachineState.technicalName', 'paid'),
+                new EqualsFilter('customFields.' . $this->customParcelIdField, null),
+                new EqualsFilter('transactions.stateMachineState.technicalName', 'paid'),
             ])
         );
         $criteria->addAssociations([
@@ -64,22 +61,21 @@ class ShopwareToGTH
         try {
             $results = $this->orderRepository->search($criteria, $context);
         } catch (Exception $e) {
-            dump ('Exception when searching for unsyncronized orders: ');
-            dump (e->getMessage());
+            dump('Exception when searching for unsyncronized orders: ');
+            dump(e->getMessage());
         }
 
         return $results;
     }
 
-    private function populateGthParcel($order) 
-    {
+    private function populateGthParcel($order) {
         $shippingAddress = $order->getDeliveries()->first()->getShippingOrderAddress();
 
         $totalWeight = 0;
         $totalVolume = 0;
         $totalPackagingUnits = 0;
 
-        foreach($order->getLineItems()->getElements() as $item) {
+        foreach ($order->getLineItems()->getElements() as $item) {
             $quantity = intval($item->getQuantity());
             $prodWeight = floatval($item->getProduct()->getWeight());
             $prodWidth = intval($item->getProduct()->getWidth());
@@ -128,8 +124,7 @@ class ShopwareToGTH
         return $parcel;
     }
 
-    private function publishParcelToGth($parcel)
-    {
+    private function publishParcelToGth($parcel) {
         $config = Configuration::getDefaultConfiguration()->setApiKey('key', $this->apiKey);
 
         try {
@@ -143,8 +138,7 @@ class ShopwareToGTH
         return;
     }
 
-    public function processAllOrders(): void
-    {
+    public function processAllOrders(): void {
         $context = Context::createDefaultContext();
 
         $orders = $this->getUnsubmittedOrders();
@@ -155,6 +149,7 @@ class ShopwareToGTH
         foreach ($orders as $order) {
             $prepParcel = $this->populateGthParcel($order);
             if ($this->gthEnv !== 'prod') { dump($prepParcel); }
+
             $pubParcel = $this->publishParcelToGth($prepParcel);
 
             $gthParcelId = $pubParcel->getParcel()->getId();
@@ -166,22 +161,21 @@ class ShopwareToGTH
             $customFields[$this->customStickerUrlField] = $gthStickerUrl;
 
             // TODO : set order status to "In Progress"
-            $this->orderRepository->update([['id' => $order->getId(), 'customFields'=>$customFields]], $context);
+            $this->orderRepository->update([['id' => $order->getId(), 'customFields' => $customFields]], $context);
 
             print_r('Order #' . $order->getOrderNumber() . ' -> GTH-Paketnummer: ' . $gthParcelId . PHP_EOL);
         }
     }
 
-    public function processOrderById(String $id): void
-    {
+    public function processOrderById(String $id): void {
         $context = Context::createDefaultContext();
 
         $criteria = new Criteria();
         $criteria->addFilter(
             new AndFilter([
-                new EqualsFilter( 'customFields.' . $this->customParcelIdField, null ),
-                new EqualsFilter( 'transactions.stateMachineState.technicalName', 'paid'),
-                new EqualsFilter( 'id', $id ),
+                new EqualsFilter('customFields.' . $this->customParcelIdField, null),
+                new EqualsFilter('transactions.stateMachineState.technicalName', 'paid'),
+                new EqualsFilter('id', $id),
             ])
         );
         $criteria->addAssociations([
@@ -196,8 +190,8 @@ class ShopwareToGTH
         try {
             $order = $this->orderRepository->search($criteria, $context)->getEntities()->first();
         } catch (Exception $e) {
-            dump ('Exception when searching for unsyncronized orders: ');
-            dump (e->getMessage());
+            dump('Exception when searching for unsyncronized orders: ');
+            dump(e->getMessage());
         }
 
         if (is_null($order)) {
@@ -217,6 +211,6 @@ class ShopwareToGTH
         $customFields[$this->customStickerUrlField] = $gthStickerUrl;
 
         // TODO : set order status to "In Progress"
-        $this->orderRepository->update([['id' => $order->getId(), 'customFields'=>$customFields]], $context);
+        $this->orderRepository->update([['id' => $order->getId(), 'customFields' => $customFields]], $context);
     }
 }

@@ -1,5 +1,4 @@
-<?php 
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace NewMobilityEnterprise\Command;
 
@@ -12,8 +11,7 @@ use Shopware\Core\System\SystemConfig\SystemConfigService;
 
 use NewMobilityEnterprise\Service\ShopwareToGTH;
 
-class OrderSubmissionCommand extends Command
-{
+class OrderSubmissionCommand extends Command {
     private SystemConfigService $systemConfigService;
     private EntityRepositoryInterface $orderRepository;
 
@@ -28,14 +26,12 @@ class OrderSubmissionCommand extends Command
     }
 
     // Provides a description, printed out in bin/console
-    protected function configure(): void
-    {
+    protected function configure(): void {
         $this->setName('gth:submit-orders')->setDescription('Syncronizes orders from Shopware to GTH System.');
     }
 
     // Actual code executed in the command
-    protected function execute(InputInterface $input, OutputInterface $output): int
-    {
+    protected function execute(InputInterface $input, OutputInterface $output): int {
         (new ShopwareToGTH($this->systemConfigService, $this->orderRepository))->processAllOrders();
 
         $output->writeln('Execution completed' . PHP_EOL);
