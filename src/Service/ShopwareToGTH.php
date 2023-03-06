@@ -61,14 +61,14 @@ class ShopwareToGTH {
         try {
             $results = $this->orderRepository->search($criteria, $context);
         } catch (Exception $e) {
-            dump('Exception when searching for unsyncronized orders: ');
+            dump('Exception when searching for unsynchronized orders: ');
             dump(e->getMessage());
         }
 
         return $results;
     }
 
-    private function populateGthParcel($order) {
+    private function populateGthParcel($order): Parcel {
         $shippingAddress = $order->getDeliveries()->first()->getShippingOrderAddress();
 
         $totalWeight = 0;
@@ -89,7 +89,7 @@ class ShopwareToGTH {
 
 
         $parcelWidth = '0';
-        $parcelLenght = '0';
+        $parcelLength = '0';
         $parcelHeight = '0';
 
         // Configuring Parcel
@@ -99,7 +99,7 @@ class ShopwareToGTH {
         $parcel->setComment($order->getCustomerComment() ?: 'Package volume: ' . $totalVolume . 'm^3');
         $parcel->setWeight($totalWeight);
         $parcel->setWidth($parcelWidth); // ######### - How to calculate for multiple items? - #########
-        $parcel->setLenght($parcelLenght); // ######### - How to calculate for multiple items? - #########
+        $parcel->setLenght($parcelLength); // ######### - How to calculate for multiple items? - #########
         $parcel->setHeight($parcelHeight); // ######### - How to calculate for multiple items? - #########
         $parcel->setPackagingUnits($totalPackagingUnits);
 
@@ -124,7 +124,7 @@ class ShopwareToGTH {
         return $parcel;
     }
 
-    private function publishParcelToGth($parcel) {
+    private function publishParcelToGth(Parcel $parcel) {
         $config = Configuration::getDefaultConfiguration()->setApiKey('key', $this->apiKey);
 
         try {
@@ -132,7 +132,7 @@ class ShopwareToGTH {
             $apiInstance = new CompanyApi(new \GuzzleHttp\Client, $config);
             return $apiInstance->submitParcel($parcel);
         } catch (Exception $e) {
-            print_r('Exception when processing order number :' . $order->orderNumber . PHP_EOL . $e->getMessage() . PHP_EOL);
+            print_r('Exception when processing order number :' . $parcel->getExternalReference() . PHP_EOL . $e->getMessage() . PHP_EOL);
         }
 
         return;
