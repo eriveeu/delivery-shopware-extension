@@ -19,7 +19,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\AndFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 
-class ShopWareToGTH
+class ShopwareToGTH
 {
     private String $gthEnv;
     private String $apiKey;
