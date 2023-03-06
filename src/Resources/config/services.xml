@@ -24,16 +24,14 @@
             <argument type="service" id="order.repository" />
         </service>
 
-        <!-- <service id="NewMobilityEnterprise\ScheduledTask\OrderSubmissionTask">
+        <service id="NewMobilityEnterprise\ScheduledTask\OrderSubmissionTask">
             <tag name="shopware.scheduled.task" />
         </service>
 
         <service id="NewMobilityEnterprise\ScheduledTask\OrderSubmissionTaskHandler">
             <tag name="messenger.message_handler" />
-            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService" />
-            <argument type="service" id="order.repository" />
-            <argument type="service" id="scheduled_task.repository" />
+            <argument type="service" id="scheduled_task.repository"/>
             <argument type="service" id="logger" />
-        </service> -->
+        </service>
     </services>
 </container>
