@@ -1,13 +1,13 @@
-<?php declare(strict_types=1);
+<?php
 
 namespace NewMobilityEnterprise\ScheduledTask;
 
 use Shopware\Core\Framework\MessageQueue\ScheduledTask\ScheduledTaskHandler;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryForwardCompatibilityDecorator;
 use Psr\Log\LoggerInterface;
 
-// use Shopware\Core\System\SystemConfig\SystemConfigService;
-// use NewMobilityEnterprise\Service\ShopwareToGTH;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\System\SystemConfig\SystemConfigService;
+use NewMobilityEnterprise\Service\ShopwareToGTH;
 
 /**
  * DI Config:
@@ -18,12 +18,12 @@ use Psr\Log\LoggerInterface;
  * </service>
  */
 class OrderSubmissionTaskHandler extends ScheduledTaskHandler {
-    private $logger;
+    private LoggerInterface $logger;
     private SystemConfigService $systemConfigService;
     private EntityRepositoryInterface $orderRepository;
 
     public function __construct(
-        EntityRepositoryForwardCompatibilityDecorator $scheduledTaskRepository,
+        EntityRepositoryInterface $scheduledTaskRepository,
         LoggerInterface $logger,
         SystemConfigService $systemConfigService,
         EntityRepositoryInterface $orderRepository,
@@ -40,7 +40,7 @@ class OrderSubmissionTaskHandler extends ScheduledTaskHandler {
     }
 
     public function run(): void {
-        // (new ShopwareToGTH($this->systemConfigService, $this->orderRepository))->processAllOrders();
-        $this->logger->notice('GreenToHome: Scheduled task ran');
+        $this->logger->notice('GreenToHome: Processing new orders and adding to GTH for delivery');
+        (new ShopwareToGTH($this->systemConfigService, $this->orderRepository))->processAllOrders();
     }
 }
