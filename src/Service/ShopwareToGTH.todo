@@ -1,0 +1,58 @@
+
+
+// TODO - Format Criteria in JSON
+
+{
+    "associations": {
+        "order": {
+            "filter": [
+                { "type": "equals", "field": "customeFiels." . $this->customParcelIdField, "value": null }
+            ]
+            "deliveries": {
+                "shippingOrderAddress": { 
+                    "country": { }
+                }
+            },
+            "lineItems": {
+                "product": { }
+            },
+            "orderCustomer": { },
+            "transactions": {
+                "filter": [
+                    { "type": "equals", "field": "stateMachineState.technicalName", "value": "paid" }
+                ]
+            }
+        }
+    },
+    "includes": {
+        "order": [
+            "orderNumber",
+            "customerComment",
+        ],
+        "orderCustomer": [
+            "firstName",
+            "lastName",
+            "email"
+        ],
+        "shippingOrderAddress": [
+            "city",
+            "zipCode",
+            "street",
+            "additionalAddressLine1",
+            "additionalAddressLine2",
+            "phoneNumber"
+        ],
+        "country": [
+            "iso"
+        ],
+        "lineItems": [
+            "quantity"
+        ],
+        "product": [
+            "weight",
+            "width",
+            "height",
+            "length"
+        ]
+    }
+}
