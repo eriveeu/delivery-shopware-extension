@@ -113,7 +113,6 @@ class ShopwareToGTH {
         $customerAddress->setCity($shippingAddress->getCity());
         $customerAddress->setZip($shippingAddress->getZipcode());
         $customerAddress->setStreet($shippingAddress->getStreet());
-        $customerAddress->setStreetNumber('0');  // TODO extract street number from street or modify ShopWare to include this field
         $a1 = $shippingAddress->getAdditionalAddressLine1() ?: '';
         $a2 = $shippingAddress->getAdditionalAddressLine2() ?: '';
         $customerAddress->setComment($a1 . ($a1 && $a2 ? ', ' : '') . $a2); // Set address comment as a union of additional address lines
