@@ -9,8 +9,7 @@
         }
     ],
     "require": {
-        "shopware/core": "~6.4",
-        "newmobilityenterprise/gth-api-client": "*@dev"
+        "newmobilityenterprise/gth-api-client": "dev-develop"
     },
     "repositories": [
         {
