@@ -71,13 +71,12 @@ class OrderService {
     private function populateGthParcel($order): Parcel {
         $shippingAddress = $order->getDeliveries()->first()->getShippingOrderAddress();
 
-        $totalWeight = 0;
-        $totalVolume = 0;
-        $totalPackagingUnits = 0;
-
         $parcelWidth = 0;
         $parcelLength = 0;
         $parcelHeight = 0;
+        $parcelWeight = 0;
+        $parcelVolume = 0;
+        $totalPackagingUnits = 0;
 
         foreach ($order->getLineItems()->getElements() as $item) {
             $quantity = intval($item->getQuantity());
@@ -91,19 +90,19 @@ class OrderService {
             $parcelHeight += $prodHeight * $quantity;
 
             $totalPackagingUnits += $quantity;
-            $totalWeight += ($quantity * $prodWeight);
-            $totalVolume += (floatval($prodWidth / 1000) * floatval($prodHeight / 1000) * floatval($prodLength / 1000)) * $quantity;
+            $parcelWeight += ($quantity * $prodWeight);
+            $parcelVolume += (floatval($prodWidth / 1000) * floatval($prodHeight / 1000) * floatval($prodLength / 1000)) * $quantity;
         }
 
         // Configuring Parcel
         $parcel = new Parcel(); // \GreenToHome\Model\Parcel | Parcel to submit
         $parcel->setExternalReference($order->getOrderNumber());
         // Sets the comment to parcel volume if there is no comment defined
-        $parcel->setComment($order->getCustomerComment() ?: 'Package volume: ' . $totalVolume . 'm^3');
-        $parcel->setWeight($totalWeight);
-        $parcel->setWidth($parcelWidth); // ######### - How to calculate for multiple items? - #########
-        $parcel->setLenght($parcelLength); // ######### - How to calculate for multiple items? - #########
-        $parcel->setHeight($parcelHeight); // ######### - How to calculate for multiple items? - #########
+        $parcel->setComment($order->getCustomerComment() ?: 'Package volume: ' . $parcelVolume . 'm^3');
+        $parcel->setWeight($parcelWeight);
+        $parcel->setWidth($parcelWidth);
+        $parcel->setLenght($parcelLength);
+        $parcel->setHeight($parcelHeight);
         $parcel->setPackagingUnits($totalPackagingUnits);
 
         $customer = new Customer(); // \GreenToHome\Model\Customer
