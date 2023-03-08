@@ -18,7 +18,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\AndFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 
-class ShopwareToGTH {
+class OrderService {
     private String $gthEnv;
     private String $apiKey;
     private String $customParcelIdField;
@@ -75,6 +75,10 @@ class ShopwareToGTH {
         $totalVolume = 0;
         $totalPackagingUnits = 0;
 
+        $parcelWidth = 0;
+        $parcelLength = 0;
+        $parcelHeight = 0;
+
         foreach ($order->getLineItems()->getElements() as $item) {
             $quantity = intval($item->getQuantity());
             $prodWeight = floatval($item->getProduct()->getWeight());
@@ -82,15 +86,14 @@ class ShopwareToGTH {
             $prodLength = intval($item->getProduct()->getLength());
             $prodHeight = intval($item->getProduct()->getHeight());
 
+            $parcelWidth = $parcelWidth > $prodWidth ?: $prodWidth;
+            $parcelLength = $parcelLength > $prodLength ?: $prodLength;
+            $parcelHeight += $prodHeight * $quantity;
+
             $totalPackagingUnits += $quantity;
             $totalWeight += ($quantity * $prodWeight);
             $totalVolume += (floatval($prodWidth / 1000) * floatval($prodHeight / 1000) * floatval($prodLength / 1000)) * $quantity;
         }
-
-
-        $parcelWidth = '0';
-        $parcelLength = '0';
-        $parcelHeight = '0';
 
         // Configuring Parcel
         $parcel = new Parcel(); // \GreenToHome\Model\Parcel | Parcel to submit

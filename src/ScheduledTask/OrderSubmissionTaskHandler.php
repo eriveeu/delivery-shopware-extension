@@ -7,7 +7,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryForwardCompatib
 use Psr\Log\LoggerInterface;
 
 // use Shopware\Core\System\SystemConfig\SystemConfigService;
-// use NewMobilityEnterprise\Service\ShopwareToGTH;
+// use NewMobilityEnterprise\Service\OrderService;
 
 /**
  * DI Config:
@@ -40,7 +40,7 @@ class OrderSubmissionTaskHandler extends ScheduledTaskHandler {
     }
 
     public function run(): void {
-        // (new ShopwareToGTH($this->systemConfigService, $this->orderRepository))->processAllOrders();
+        // (new OrderService($this->systemConfigService, $this->orderRepository))->processAllOrders();
         $this->logger->notice('GreenToHome: Scheduled task ran');
     }
 }
