@@ -18,7 +18,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\AndFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 
-class ShopwareToGTH {
+class OrderService {
     private String $gthEnv;
     private String $apiKey;
     private String $customParcelIdField;
@@ -61,18 +61,21 @@ class ShopwareToGTH {
         try {
             $results = $this->orderRepository->search($criteria, $context);
         } catch (Exception $e) {
-            dump('Exception when searching for unsyncronized orders: ');
+            dump('Exception when searching for unsynchronized orders: ');
             dump(e->getMessage());
         }
 
         return $results;
     }
 
-    private function populateGthParcel($order) {
+    private function populateGthParcel($order): Parcel {
         $shippingAddress = $order->getDeliveries()->first()->getShippingOrderAddress();
 
-        $totalWeight = 0;
-        $totalVolume = 0;
+        $parcelWidth = 0;
+        $parcelLength = 0;
+        $parcelHeight = 0;
+        $parcelWeight = 0;
+        $parcelVolume = 0;
         $totalPackagingUnits = 0;
 
         foreach ($order->getLineItems()->getElements() as $item) {
@@ -82,38 +85,36 @@ class ShopwareToGTH {
             $prodLength = intval($item->getProduct()->getLength());
             $prodHeight = intval($item->getProduct()->getHeight());
 
+            $parcelWidth = $parcelWidth > $prodWidth ?: $prodWidth;
+            $parcelLength = $parcelLength > $prodLength ?: $prodLength;
+            $parcelHeight += $prodHeight * $quantity;
+
             $totalPackagingUnits += $quantity;
-            $totalWeight += ($quantity * $prodWeight);
-            $totalVolume += (floatval($prodWidth / 1000) * floatval($prodHeight / 1000) * floatval($prodLength / 1000)) * $quantity;
+            $parcelWeight += ($quantity * $prodWeight);
+            $parcelVolume += (floatval($prodWidth / 1000) * floatval($prodHeight / 1000) * floatval($prodLength / 1000)) * $quantity;
         }
-
-
-        $parcelWidth = '0';
-        $parcelLenght = '0';
-        $parcelHeight = '0';
 
         // Configuring Parcel
         $parcel = new Parcel(); // \GreenToHome\Model\Parcel | Parcel to submit
         $parcel->setExternalReference($order->getOrderNumber());
         // Sets the comment to parcel volume if there is no comment defined
-        $parcel->setComment($order->getCustomerComment() ?: 'Package volume: ' . $totalVolume . 'm^3');
-        $parcel->setWeight($totalWeight);
-        $parcel->setWidth($parcelWidth); // ######### - How to calculate for multiple items? - #########
-        $parcel->setLenght($parcelLenght); // ######### - How to calculate for multiple items? - #########
-        $parcel->setHeight($parcelHeight); // ######### - How to calculate for multiple items? - #########
+        $parcel->setComment($order->getCustomerComment() ?: 'Package volume: ' . $parcelVolume . 'm^3');
+        $parcel->setWeight($parcelWeight);
+        $parcel->setWidth($parcelWidth);
+        $parcel->setLength($parcelLength);
+        $parcel->setHeight($parcelHeight);
         $parcel->setPackagingUnits($totalPackagingUnits);
 
         $customer = new Customer(); // \GreenToHome\Model\Customer
         $customer->setName($order->getOrderCustomer()->getFirstName() . ' ' . $order->getOrderCustomer()->getLastName());
         $customer->setEmail($order->getOrderCustomer()->getEmail());
-        $customer->setPhone($shippingAddress->getPhoneNumber() ?? '+43555000000');
+        $customer->setPhone($shippingAddress->getPhoneNumber());
 
         $customerAddress = new Address(); // \GreenToHome\Model\Address
         $customerAddress->setCountry($shippingAddress->getCountry()->getIso());
         $customerAddress->setCity($shippingAddress->getCity());
         $customerAddress->setZip($shippingAddress->getZipcode());
         $customerAddress->setStreet($shippingAddress->getStreet());
-        $customerAddress->setStreetNumber('0');  // TODO extract street number from street or modify ShopWare to include this field
         $a1 = $shippingAddress->getAdditionalAddressLine1() ?: '';
         $a2 = $shippingAddress->getAdditionalAddressLine2() ?: '';
         $customerAddress->setComment($a1 . ($a1 && $a2 ? ', ' : '') . $a2); // Set address comment as a union of additional address lines
@@ -124,7 +125,7 @@ class ShopwareToGTH {
         return $parcel;
     }
 
-    private function publishParcelToGth($parcel) {
+    private function publishParcelToGth(Parcel $parcel) {
         $config = Configuration::getDefaultConfiguration()->setApiKey('key', $this->apiKey);
 
         try {
@@ -132,7 +133,7 @@ class ShopwareToGTH {
             $apiInstance = new CompanyApi(new \GuzzleHttp\Client, $config);
             return $apiInstance->submitParcel($parcel);
         } catch (Exception $e) {
-            print_r('Exception when processing order number :' . $order->orderNumber . PHP_EOL . $e->getMessage() . PHP_EOL);
+            print_r('Exception when processing order number :' . $parcel->getExternalReference() . PHP_EOL . $e->getMessage() . PHP_EOL);
         }
 
         return;

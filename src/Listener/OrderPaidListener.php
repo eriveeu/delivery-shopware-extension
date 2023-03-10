@@ -3,10 +3,11 @@
 namespace NewMobilityEnterprise\Listener;
 
 use Psr\Log\LoggerInterface;
-use NewMobilityEnterprise\Service\ShopwareToGTH;
+use NewMobilityEnterprise\Service\OrderService;
 
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Event\EntityWrittenEvent;
+use Shopware\Core\Checkout\Order\Event\OrderStateMachineStateChangeEvent;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 
 class OrderPaidListener {
@@ -24,9 +25,9 @@ class OrderPaidListener {
         $this->orderRepository = $orderRepository;
     }
 
-    public function onOrderTransactionState(EntityWrittenEvent $event): void {
-        $id = $event->getIds();
-        $this->logger->notice('GreenToHome: Processing order # ' . $id[0]);
-        (new ShopwareToGTH($this->systemConfigService, $this->orderRepository))->processOrderById($id[0]);
+    public function onOrderTransactionState(OrderStateMachineStateChangeEvent $event): void {
+        $id = $event->getOrderId();
+        $this->logger->notice('GreenToHome: Processing order # ' . $id);
+        (new OrderService($this->systemConfigService, $this->orderRepository))->processOrderById($id);
     }
 }
