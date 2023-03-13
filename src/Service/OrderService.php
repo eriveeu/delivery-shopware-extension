@@ -2,6 +2,7 @@
 
 namespace NewMobilityEnterprise\Service;
 
+use Doctrine\DBAL\Driver\PDO\Exception;
 use GuzzleHttp\Client;
 use GreenToHome\Configuration;
 
@@ -130,7 +131,7 @@ class OrderService {
 
         try {
             // Save parcel to GTH and retrieve assigned ID and Sticker URL
-            $apiInstance = new CompanyApi(new \GuzzleHttp\Client, $config);
+            $apiInstance = new CompanyApi(new Client, $config);
             return $apiInstance->submitParcel($parcel);
         } catch (Exception $e) {
             print_r('Exception when processing order number :' . $parcel->getExternalReference() . PHP_EOL . $e->getMessage() . PHP_EOL);
