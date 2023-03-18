@@ -80,11 +80,11 @@ class OrderService {
         $totalPackagingUnits = 0;
 
         foreach ($order->getLineItems()->getElements() as $item) {
-            $quantity = intval($item->getQuantity());
-            $prodWeight = floatval($item->getProduct()->getWeight());
-            $prodWidth = intval($item->getProduct()->getWidth());
-            $prodLength = intval($item->getProduct()->getLength());
-            $prodHeight = intval($item->getProduct()->getHeight());
+            $quantity = intval($item->getQuantity() ?: 1);
+            $prodWeight = floatval($item->getProduct()->getWeight() ?: 0);
+            $prodWidth = intval($item->getProduct()->getWidth() ?: 0);
+            $prodLength = intval($item->getProduct()->getLength() ?: 0);
+            $prodHeight = intval($item->getProduct()->getHeight() ?: 0);
 
             $parcelWidth = $parcelWidth > $prodWidth ?: $prodWidth;
             $parcelLength = $parcelLength > $prodLength ?: $prodLength;
