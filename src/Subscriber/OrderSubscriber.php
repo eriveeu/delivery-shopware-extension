@@ -43,6 +43,6 @@ class OrderSubscriber implements EventSubscriberInterface
 
   public function onProductLoaded(EntityLoadedEvent $event): void
   {
-    $this->logger->notice('GreenToHome: Product loaded: ' . print_r($event->getEntities(), true));
+    // $this->logger->notice('GreenToHome: Product loaded: ' . print_r($event->getEntities(), true));
   }
 }
