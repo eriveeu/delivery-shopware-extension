@@ -191,7 +191,7 @@ class OrderService {
         try {
             $order = $this->orderRepository->search($criteria, $context)->getEntities()->first();
         } catch (Exception $e) {
-            dump('Exception when searching for unsyncronized orders: ');
+            dump('Exception when searching for order id: ', $id);
             dump(e->getMessage());
         }
 
