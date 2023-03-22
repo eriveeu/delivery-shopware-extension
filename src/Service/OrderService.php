@@ -102,14 +102,14 @@ class OrderService {
         $parcel->setComment($order->getCustomerComment() ?: 'Package volume: ' . $parcelVolume . 'm^3');
         $parcel->setWeight($parcelWeight);
         $parcel->setWidth($parcelWidth);
-        $parcel->setLenght($parcelLength);
+        $parcel->setLength($parcelLength);
         $parcel->setHeight($parcelHeight);
         $parcel->setPackagingUnits($totalPackagingUnits);
 
         $customer = new Customer(); // \GreenToHome\Model\Customer
         $customer->setName($order->getOrderCustomer()->getFirstName() . ' ' . $order->getOrderCustomer()->getLastName());
         $customer->setEmail($order->getOrderCustomer()->getEmail());
-        $customer->setPhone($shippingAddress->getPhoneNumber() ?? '+43555000000');
+        $customer->setPhone($shippingAddress->getPhoneNumber());
 
         $customerAddress = new Address(); // \GreenToHome\Model\Address
         $customerAddress->setCountry($shippingAddress->getCountry()->getIso());
