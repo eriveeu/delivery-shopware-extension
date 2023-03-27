@@ -18,7 +18,7 @@ class OrderPaidListener {
     public function __construct(
         LoggerInterface $logger,
         SystemConfigService $systemConfigService,
-        EntityRepositoryInterface $orderRepository,
+        EntityRepositoryInterface $orderRepository
     ) {
         $this->logger = $logger;
         $this->systemConfigService = $systemConfigService;
