@@ -18,7 +18,7 @@ class OrderSubmissionCommand extends Command {
 
     public function __construct(
         SystemConfigService $systemConfigService,
-        EntityRepositoryInterface $orderRepository,
+        EntityRepositoryInterface $orderRepository
     ) {
         parent::__construct();
 

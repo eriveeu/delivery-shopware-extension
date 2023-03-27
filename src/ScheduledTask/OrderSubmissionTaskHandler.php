@@ -26,7 +26,7 @@ class OrderSubmissionTaskHandler extends ScheduledTaskHandler {
         EntityRepositoryForwardCompatibilityDecorator $scheduledTaskRepository,
         LoggerInterface $logger,
         SystemConfigService $systemConfigService,
-        EntityRepositoryInterface $orderRepository,
+        EntityRepositoryInterface $orderRepository
     ) {
         parent::__construct($scheduledTaskRepository);
 

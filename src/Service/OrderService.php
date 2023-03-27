@@ -29,7 +29,7 @@ class OrderService {
 
     public function __construct(
         SystemConfigService $systemConfigService,
-        EntityRepositoryInterface $orderRepository,
+        EntityRepositoryInterface $orderRepository
     ) {
         $this->systemConfigService = $systemConfigService;
         $this->orderRepository = $orderRepository;
