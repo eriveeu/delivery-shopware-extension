@@ -83,19 +83,21 @@ class OrderService
         $totalPackagingUnits = 0;
 
         foreach ($order->getLineItems()->getElements() as $item) {
-            $quantity = intval($item->getQuantity() ?: 1);
-            $prodWeight = floatval($item->getProduct()->getWeight() ?: 0);
-            $prodWidth = intval($item->getProduct()->getWidth() ?: 0);
-            $prodLength = intval($item->getProduct()->getLength() ?: 0);
-            $prodHeight = intval($item->getProduct()->getHeight() ?: 0);
+            if ($item->getProduct()) {
+                $quantity = intval($item->getQuantity() ?: 1);
+                $prodWeight = floatval($item->getProduct()->getWeight() ?: 0);
+                $prodWidth = intval($item->getProduct()->getWidth() ?: 0);
+                $prodLength = intval($item->getProduct()->getLength() ?: 0);
+                $prodHeight = intval($item->getProduct()->getHeight() ?: 0);
 
-            $parcelWidth = $parcelWidth > $prodWidth ?: $prodWidth;
-            $parcelLength = $parcelLength > $prodLength ?: $prodLength;
-            $parcelHeight += $prodHeight * $quantity;
+                $parcelWidth = $parcelWidth > $prodWidth ?: $prodWidth;
+                $parcelLength = $parcelLength > $prodLength ?: $prodLength;
+                $parcelHeight += $prodHeight * $quantity;
 
-            $totalPackagingUnits += $quantity;
-            $parcelWeight += ($quantity * $prodWeight);
-            $parcelVolume += (floatval($prodWidth / 1000) * floatval($prodHeight / 1000) * floatval($prodLength / 1000)) * $quantity;
+                $totalPackagingUnits += $quantity;
+                $parcelWeight += ($quantity * $prodWeight);
+                $parcelVolume += (floatval($prodWidth / 1000) * floatval($prodHeight / 1000) * floatval($prodLength / 1000)) * $quantity;
+            }
         }
 
         // Configuring Parcel
