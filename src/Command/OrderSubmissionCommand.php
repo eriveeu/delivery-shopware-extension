@@ -11,7 +11,8 @@ use Shopware\Core\System\SystemConfig\SystemConfigService;
 
 use NewMobilityEnterprise\Service\OrderService;
 
-class OrderSubmissionCommand extends Command {
+class OrderSubmissionCommand extends Command
+{
     const SUCCESS = 0;
     private SystemConfigService $systemConfigService;
     private EntityRepositoryInterface $orderRepository;
@@ -27,12 +28,14 @@ class OrderSubmissionCommand extends Command {
     }
 
     // Provides a description, printed out in bin/console
-    protected function configure(): void {
+    protected function configure(): void
+    {
         $this->setName('gth:submit-orders')->setDescription('Synchronizes orders from Shopware to GTH System.');
     }
 
     // Actual code executed in the command
-    protected function execute(InputInterface $input, OutputInterface $output): int {
+    protected function execute(InputInterface $input, OutputInterface $output): int
+    {
         (new OrderService($this->systemConfigService, $this->orderRepository))->processAllOrders();
 
         $output->writeln('Execution completed' . PHP_EOL);

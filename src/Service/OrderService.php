@@ -19,11 +19,12 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\AndFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 
-class OrderService {
-    private String $gthEnv;
-    private String $apiKey;
-    private String $customParcelIdField;
-    private String $customStickerUrlField;
+class OrderService
+{
+    private string $gthEnv;
+    private string $apiKey;
+    private string $customParcelIdField;
+    private string $customStickerUrlField;
     private SystemConfigService $systemConfigService;
     private EntityRepositoryInterface $orderRepository;
 
@@ -40,7 +41,8 @@ class OrderService {
         $this->customStickerUrlField = $systemConfigService->get('GreenToHome.config.stickerUrlFieldName') ?? 'custom_gth_StickerUrl';
     }
 
-    private function getUnsubmittedOrders(): EntitySearchResult {
+    private function getUnsubmittedOrders(): EntitySearchResult
+    {
         $context = Context::createDefaultContext();
 
         $criteria = new Criteria();
@@ -69,7 +71,8 @@ class OrderService {
         return $results;
     }
 
-    private function populateGthParcel($order): Parcel {
+    private function populateGthParcel($order): Parcel
+    {
         $shippingAddress = $order->getDeliveries()->first()->getShippingOrderAddress();
 
         $parcelWidth = 0;
@@ -126,7 +129,8 @@ class OrderService {
         return $parcel;
     }
 
-    private function publishParcelToGth(Parcel $parcel) {
+    private function publishParcelToGth(Parcel $parcel)
+    {
         $config = Configuration::getDefaultConfiguration()->setApiKey('key', $this->apiKey);
 
         try {
@@ -140,17 +144,23 @@ class OrderService {
         return;
     }
 
-    public function processAllOrders(): void {
+    public function processAllOrders(): void
+    {
         $context = Context::createDefaultContext();
 
         $orders = $this->getUnsubmittedOrders();
 
-        if (count($orders) === 0) { print_r('No new unhandled orders found' . PHP_EOL); }
-        else { print_r('Following orders are being processed:' . PHP_EOL); }
+        if (count($orders) === 0) {
+            print_r('No new unhandled orders found' . PHP_EOL);
+        } else {
+            print_r('Following orders are being processed:' . PHP_EOL);
+        }
 
         foreach ($orders as $order) {
             $prepParcel = $this->populateGthParcel($order);
-            if ($this->gthEnv !== 'prod') { dump($prepParcel); }
+            if ($this->gthEnv !== 'prod') {
+                dump($prepParcel);
+            }
 
             $pubParcel = $this->publishParcelToGth($prepParcel);
 
@@ -169,7 +179,8 @@ class OrderService {
         }
     }
 
-    public function processOrderById(String $id): void {
+    public function processOrderById(string $id): void
+    {
         $context = Context::createDefaultContext();
 
         $criteria = new Criteria();

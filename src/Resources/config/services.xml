@@ -18,7 +18,7 @@
             <!-- <tag name="kernel.event_listener" event="order.written" method="onOrderTransactionState" /> -->
             <tag name="kernel.event_listener" event="state_enter.order_transaction.state.paid" method="onOrderTransactionState" />
             <argument type="service" id="logger" />
-            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService" />
+            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService" />   
             <argument type="service" id="order.repository" />
         </service>
 

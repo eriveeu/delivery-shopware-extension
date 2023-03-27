@@ -10,7 +10,8 @@ use Shopware\Core\Framework\DataAbstractionLayer\Event\EntityWrittenEvent;
 use Shopware\Core\Checkout\Order\Event\OrderStateMachineStateChangeEvent;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 
-class OrderPaidListener {
+class OrderPaidListener
+{
     private $logger;
     private SystemConfigService $systemConfigService;
     private EntityRepositoryInterface $orderRepository;
@@ -25,7 +26,8 @@ class OrderPaidListener {
         $this->orderRepository = $orderRepository;
     }
 
-    public function onOrderTransactionState(OrderStateMachineStateChangeEvent $event): void {
+    public function onOrderTransactionState(OrderStateMachineStateChangeEvent $event): void
+    {
         $id = $event->getOrderId();
         $this->logger->notice('GreenToHome: Processing order # ' . $id);
         (new OrderService($this->systemConfigService, $this->orderRepository))->processOrderById($id);

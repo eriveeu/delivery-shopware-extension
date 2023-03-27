@@ -2,12 +2,12 @@
 
 namespace NewMobilityEnterprise\ScheduledTask;
 
+use NewMobilityEnterprise\Service\OrderService;
+use Psr\Log\LoggerInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\MessageQueue\ScheduledTask\ScheduledTaskHandler;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryForwardCompatibilityDecorator;
-use Psr\Log\LoggerInterface;
-
-// use Shopware\Core\System\SystemConfig\SystemConfigService;
-// use NewMobilityEnterprise\Service\OrderService;
+use Shopware\Core\System\SystemConfig\SystemConfigService;
 
 /**
  * DI Config:
@@ -17,7 +17,8 @@ use Psr\Log\LoggerInterface;
  * <tag name="messenger.message_handler"/>
  * </service>
  */
-class OrderSubmissionTaskHandler extends ScheduledTaskHandler {
+class OrderSubmissionTaskHandler extends ScheduledTaskHandler
+{
     private $logger;
     private SystemConfigService $systemConfigService;
     private EntityRepositoryInterface $orderRepository;
@@ -35,12 +36,14 @@ class OrderSubmissionTaskHandler extends ScheduledTaskHandler {
         $this->orderRepository = $orderRepository;
     }
 
-    public static function getHandledMessages(): iterable {
+    public static function getHandledMessages(): iterable
+    {
         return [OrderSubmissionTask::class];
     }
 
-    public function run(): void {
-        // (new OrderService($this->systemConfigService, $this->orderRepository))->processAllOrders();
+    public function run(): void
+    {
+        (new OrderService($this->systemConfigService, $this->orderRepository))->processAllOrders();
         $this->logger->notice('GreenToHome: Scheduled task ran');
     }
 }
