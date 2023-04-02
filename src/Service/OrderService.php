@@ -65,7 +65,7 @@ class OrderService
             $results = $this->orderRepository->search($criteria, $context);
         } catch (Exception $e) {
             dump('Exception when searching for unsynchronized orders: ');
-            dump(e->getMessage());
+            dump($e->getMessage());
         }
 
         return $results;
@@ -206,7 +206,7 @@ class OrderService
             $order = $this->orderRepository->search($criteria, $context)->getEntities()->first();
         } catch (Exception $e) {
             dump('Exception when searching for unsyncronized orders: ');
-            dump(e->getMessage());
+            dump($e->getMessage());
         }
 
         if (is_null($order)) {
