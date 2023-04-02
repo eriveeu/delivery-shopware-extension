@@ -27,6 +27,7 @@ class OrderService
     private string $customStickerUrlField;
     private SystemConfigService $systemConfigService;
     private EntityRepositoryInterface $orderRepository;
+    private Context $context;
 
     public function __construct(
         SystemConfigService $systemConfigService,
@@ -39,12 +40,12 @@ class OrderService
         $this->apiKey = $systemConfigService->get('GreenToHome.config.apikey');
         $this->customParcelIdField = $systemConfigService->get('GreenToHome.config.parcelIdFieldName') ?? 'custom_gth_ParcelID';
         $this->customStickerUrlField = $systemConfigService->get('GreenToHome.config.stickerUrlFieldName') ?? 'custom_gth_StickerUrl';
+
+        $this->context = Context::createDefaultContext();
     }
 
     private function getUnsubmittedOrders(): EntitySearchResult
     {
-        $context = Context::createDefaultContext();
-
         $criteria = new Criteria();
         $criteria->addFilter(
             new AndFilter([
@@ -62,7 +63,7 @@ class OrderService
 
         $results = null;
         try {
-            $results = $this->orderRepository->search($criteria, $context);
+            $results = $this->orderRepository->search($criteria, $this->context);
         } catch (Exception $e) {
             dump('Exception when searching for unsynchronized orders: ');
             dump($e->getMessage());
@@ -99,6 +100,9 @@ class OrderService
                 $parcelVolume += (floatval($prodWidth / 1000) * floatval($prodHeight / 1000) * floatval($prodLength / 1000)) * $quantity;
             }
         }
+
+        // Overwrite weight untill API is fixed
+        $parcelWeight = 0;
 
         // Configuring Parcel
         $parcel = new Parcel(); // \GreenToHome\Model\Parcel | Parcel to submit
@@ -146,45 +150,43 @@ class OrderService
         return;
     }
 
+    private function populateParcelData($order)
+    {
+        $preparedParcel = $this->populateGthParcel($order);
+        $pubParcel = $this->publishParcelToGth($preparedParcel);
+
+        $gthParcelId = $pubParcel->getParcel()->getId();
+        $gthStickerUrl = $pubParcel->getParcel()->getLabelUrl();
+
+        // Set custom fields to GTH Parcel ID and Sticker URL
+        $customFields = $order->getCustomFields();
+        $customFields[$this->customParcelIdField] = $gthParcelId;
+        $customFields[$this->customStickerUrlField] = $gthStickerUrl;
+
+        // TODO : set order status to "In Progress"
+        $this->orderRepository->update([['id' => $order->getId(), 'customFields' => $customFields]], $this->context);
+
+        print_r('Order #' . $order->getOrderNumber() . ' -> GTH-Paketnummer: ' . $gthParcelId . PHP_EOL);
+    }
+
     public function processAllOrders(): void
     {
-        $context = Context::createDefaultContext();
-
         $orders = $this->getUnsubmittedOrders();
 
         if (count($orders) === 0) {
             print_r('No new unhandled orders found' . PHP_EOL);
-        } else {
-            print_r('Following orders are being processed:' . PHP_EOL);
+            return;
         }
 
+        print_r('Following orders are being processed:' . PHP_EOL);
+
         foreach ($orders as $order) {
-            $prepParcel = $this->populateGthParcel($order);
-            if ($this->gthEnv !== 'prod') {
-                dump($prepParcel);
-            }
-
-            $pubParcel = $this->publishParcelToGth($prepParcel);
-
-            $gthParcelId = $pubParcel->getParcel()->getId();
-            $gthStickerUrl = $pubParcel->getParcel()->getLabelUrl();
-
-            // Set custom fields to GTH Parcel ID and Sticker URL
-            $customFields = $order->getCustomFields();
-            $customFields[$this->customParcelIdField] = $gthParcelId;
-            $customFields[$this->customStickerUrlField] = $gthStickerUrl;
-
-            // TODO : set order status to "In Progress"
-            $this->orderRepository->update([['id' => $order->getId(), 'customFields' => $customFields]], $context);
-
-            print_r('Order #' . $order->getOrderNumber() . ' -> GTH-Paketnummer: ' . $gthParcelId . PHP_EOL);
+            $this->populateParcelData($order);
         }
     }
 
     public function processOrderById(string $id): void
     {
-        $context = Context::createDefaultContext();
-
         $criteria = new Criteria();
         $criteria->addFilter(
             new AndFilter([
@@ -203,7 +205,7 @@ class OrderService
 
         $order = null;
         try {
-            $order = $this->orderRepository->search($criteria, $context)->getEntities()->first();
+            $order = $this->orderRepository->search($criteria, $this->context)->getEntities()->first();
         } catch (Exception $e) {
             dump('Exception when searching for unsyncronized orders: ');
             dump($e->getMessage());
@@ -213,19 +215,6 @@ class OrderService
             return;
         }
 
-        $prepParcel = $this->populateGthParcel($order);
-
-        $pubParcel = $this->publishParcelToGth($prepParcel);
-
-        $gthParcelId = $pubParcel->getParcel()->getId();
-        $gthStickerUrl = $pubParcel->getParcel()->getLabelUrl();
-
-        // Set custom fields to GTH Parcel ID and Sticker URL
-        $customFields = $order->getCustomFields();
-        $customFields[$this->customParcelIdField] = $gthParcelId;
-        $customFields[$this->customStickerUrlField] = $gthStickerUrl;
-
-        // TODO : set order status to "In Progress"
-        $this->orderRepository->update([['id' => $order->getId(), 'customFields' => $customFields]], $context);
+        $this->populateParcelData($order);
     }
 }
