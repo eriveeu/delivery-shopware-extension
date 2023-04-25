@@ -1,11 +1,11 @@
 {
-    "name": "newmobilityenterprise/greentohome-shopware",
+    "name": "erive/greentohome-shopware",
     "description": "GREEN TO HOME",
     "type": "shopware-platform-plugin",
     "version": "1.0.0",
     "authors": [
         {
-            "name": "New Mobility Enterprise - NME GmbH"
+            "name": "Erive GmbH"
         }
     ],
     "require": {
@@ -20,12 +20,12 @@
     "license": "MIT",
     "autoload": {
         "psr-4": {
-            "NewMobilityEnterprise\\": "src/"
+            "Erive\\": "src/"
         }
     },
     "extra": {
-        "shopware-plugin-class": "NewMobilityEnterprise\\GreenToHome",
-        "copyright": "New Mobility Enterprise - NME GmbH",
+          "shopware-plugin-class": "Erive\\GreenToHome",
+          "copyright": "Erive GmbH",
         "label": {
             "de-DE": "GREEN TO HOME",
             "en-GB": "GREEN TO HOME"

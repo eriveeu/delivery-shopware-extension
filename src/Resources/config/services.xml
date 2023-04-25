@@ -8,13 +8,13 @@
         <defaults autowire="true" autoconfigure="true" public="false">
         </defaults>
 
-        <service id="NewMobilityEnterprise\Command\OrderSubmissionCommand">
+        <service id="Erive\Command\OrderSubmissionCommand">
             <tag name="console.command" />
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService" />
             <argument type="service" id="order.repository" />
         </service>
 
-        <service id="NewMobilityEnterprise\Listener\OrderPaidListener" >
+        <service id="Erive\Listener\OrderPaidListener" >
             <!-- <tag name="kernel.event_listener" event="order.written" method="onOrderTransactionState" /> -->
             <tag name="kernel.event_listener" event="state_enter.order_transaction.state.paid" method="onOrderTransactionState" />
             <argument type="service" id="logger" />
@@ -22,11 +22,11 @@
             <argument type="service" id="order.repository" />
         </service>
 
-        <service id="NewMobilityEnterprise\ScheduledTask\OrderSubmissionTask">
+        <service id="Erive\ScheduledTask\OrderSubmissionTask">
             <tag name="shopware.scheduled.task" />
         </service>
 
-        <service id="NewMobilityEnterprise\ScheduledTask\OrderSubmissionTaskHandler">
+        <service id="Erive\ScheduledTask\OrderSubmissionTaskHandler">
             <tag name="messenger.message_handler" />
             <argument type="service" id="scheduled_task.repository"/>
             <argument type="service" id="logger" />
