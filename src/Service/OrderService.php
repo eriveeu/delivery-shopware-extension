@@ -1,11 +1,11 @@
 <?php declare(strict_types=1);
 
-namespace NewMobilityEnterprise\Service;
+namespace Erive\GreenToHome\Service;
 
 use Doctrine\DBAL\Driver\PDO\Exception;
 use GuzzleHttp\Client;
-use GreenToHome\Configuration;
 
+use GreenToHome\Configuration;
 use GreenToHome\Api\CompanyApi;
 use GreenToHome\Model\Parcel;
 use GreenToHome\Model\Customer;

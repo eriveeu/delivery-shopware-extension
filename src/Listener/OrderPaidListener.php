@@ -1,9 +1,9 @@
 <?php declare(strict_types=1);
 
-namespace NewMobilityEnterprise\Listener;
+namespace Erive\GreenToHome\Listener;
 
 use Psr\Log\LoggerInterface;
-use NewMobilityEnterprise\Service\OrderService;
+use Erive\GreenToHome\Service\OrderService;
 
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Event\EntityWrittenEvent;
