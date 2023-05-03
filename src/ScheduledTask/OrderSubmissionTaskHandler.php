@@ -1,8 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace Erive\ScheduledTask;
+namespace Erive\GreenToHome\ScheduledTask;
 
-use Erive\Service\OrderService;
+use Erive\GreenToHome\Service\OrderService;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\MessageQueue\ScheduledTask\ScheduledTaskHandler;

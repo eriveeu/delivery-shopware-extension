@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Erive\ScheduledTask;
+namespace Erive\GreenToHome\ScheduledTask;
 
 use Shopware\Core\Framework\MessageQueue\ScheduledTask\ScheduledTask;
 
