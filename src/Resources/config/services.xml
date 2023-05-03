@@ -1,0 +1,37 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="https://symfony.com/schema/dic/services https://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <defaults autowire="true" autoconfigure="true" public="false">
+        </defaults>
+
+        <service id="Erive\GreenToHome\Command\OrderSubmissionCommand">
+            <tag name="console.command" />
+            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService" />
+            <argument type="service" id="order.repository" />
+        </service>
+
+        <service id="Erive\GreenToHome\Listener\OrderPaidListener" >
+            <!-- <tag name="kernel.event_listener" event="order.written" method="onOrderTransactionState" /> -->
+            <tag name="kernel.event_listener" event="state_enter.order_transaction.state.paid" method="onOrderTransactionState" />
+            <argument type="service" id="logger" />
+            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService" />   
+            <argument type="service" id="order.repository" />
+        </service>
+
+        <service id="Erive\GreenToHome\ScheduledTask\OrderSubmissionTask">
+            <tag name="shopware.scheduled.task" />
+        </service>
+
+        <service id="Erive\GreenToHome\ScheduledTask\OrderSubmissionTaskHandler">
+            <tag name="messenger.message_handler" />
+            <argument type="service" id="scheduled_task.repository"/>
+            <argument type="service" id="logger" />
+            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService" />
+            <argument type="service" id="order.repository" />
+        </service>
+    </services>
+</container>
