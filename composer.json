@@ -10,7 +10,7 @@
   ],
   "require": {
     "php": "^7.4 || ^8.0",
-    "eriveeu/delivery-api-client": "dev-main"
+    "eriveeu/delivery-api-client": "v0.1.0"
   },
   "repositories": [
     {

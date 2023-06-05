@@ -4,11 +4,11 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "816bba2fb04e53e01a8c26f5bbbd720a",
+    "content-hash": "f2aa11794fa4b8875ed36e5f626dde7c",
     "packages": [
         {
             "name": "eriveeu/delivery-api-client",
-            "version": "dev-main",
+            "version": "v0.1.0",
             "source": {
                 "type": "git",
                 "url": "git@github.com:eriveeu/delivery-api-client-php.git",
@@ -32,7 +32,6 @@
                 "friendsofphp/php-cs-fixer": "^3.5",
                 "phpunit/phpunit": "^8.0 || ^9.0"
             },
-            "default-branch": true,
             "type": "library",
             "autoload": {
                 "psr-4": {
@@ -65,7 +64,7 @@
                 "sdk"
             ],
             "support": {
-                "source": "https://github.com/eriveeu/delivery-api-client-php/tree/develop",
+                "source": "https://github.com/eriveeu/delivery-api-client-php/tree/v0.1.0",
                 "issues": "https://github.com/eriveeu/delivery-api-client-php/issues"
             },
             "time": "2023-06-05T11:16:55+00:00"
@@ -670,12 +669,12 @@
     "packages-dev": [],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "eriveeu/delivery-api-client": 20
-    },
+    "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
-    "platform": [],
+    "platform": {
+        "php": "^7.4 || ^8.0"
+    },
     "platform-dev": [],
     "plugin-api-version": "2.3.0"
 }
