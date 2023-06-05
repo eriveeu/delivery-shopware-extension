@@ -3,13 +3,12 @@
 namespace Erive\GreenToHome\Service;
 
 use Doctrine\DBAL\Driver\PDO\Exception;
+use Erive\Delivery\Api\CompanyApi;
+use Erive\Delivery\Configuration;
+use Erive\Delivery\Model\Address;
+use Erive\Delivery\Model\Customer;
+use Erive\Delivery\Model\Parcel;
 use GuzzleHttp\Client;
-
-use GreenToHome\Configuration;
-use GreenToHome\Api\CompanyApi;
-use GreenToHome\Model\Parcel;
-use GreenToHome\Model\Customer;
-use GreenToHome\Model\Address;
 
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
