@@ -25,7 +25,7 @@
     }
   },
   "extra": {
-    "shopware-plugin-class": "Erive\\GreenToHome\\GreenToHomeExtension",
+    "shopware-plugin-class": "Erive\\GreenToHome\\EriveDelivery",
     "copyright": "Erive GmbH",
     "label": {
       "de-DE": "ERIVE.delivery",
