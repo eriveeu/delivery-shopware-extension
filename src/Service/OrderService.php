@@ -1,15 +1,14 @@
 <?php declare(strict_types=1);
 
-namespace NewMobilityEnterprise\Service;
+namespace Erive\GreenToHome\Service;
 
 use Doctrine\DBAL\Driver\PDO\Exception;
+use Erive\Delivery\Api\CompanyApi;
+use Erive\Delivery\Configuration;
+use Erive\Delivery\Model\Address;
+use Erive\Delivery\Model\Customer;
+use Erive\Delivery\Model\Parcel;
 use GuzzleHttp\Client;
-use GreenToHome\Configuration;
-
-use GreenToHome\Api\CompanyApi;
-use GreenToHome\Model\Parcel;
-use GreenToHome\Model\Customer;
-use GreenToHome\Model\Address;
 
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
@@ -35,11 +34,10 @@ class OrderService
     ) {
         $this->systemConfigService = $systemConfigService;
         $this->orderRepository = $orderRepository;
-
-        $this->gthEnv = $systemConfigService->get('GreenToHome.config.gthEnvironment');
-        $this->apiKey = $systemConfigService->get('GreenToHome.config.apikey');
-        $this->customParcelIdField = $systemConfigService->get('GreenToHome.config.parcelIdFieldName') ?? 'custom_gth_ParcelID';
-        $this->customStickerUrlField = $systemConfigService->get('GreenToHome.config.stickerUrlFieldName') ?? 'custom_gth_StickerUrl';
+        $this->gthEnv = $systemConfigService->get('EriveDelivery.config.gthEnvironment');
+        $this->apiKey = $systemConfigService->get('EriveDelivery.config.apikey');
+        $this->customParcelIdField = $systemConfigService->get('EriveDelivery.config.parcelIdFieldName') ?? 'custom_gth_ParcelID';
+        $this->customStickerUrlField = $systemConfigService->get('EriveDelivery.config.stickerUrlFieldName') ?? 'custom_gth_StickerUrl';
 
         $this->context = Context::createDefaultContext();
     }
@@ -118,7 +116,7 @@ class OrderService
         $customer = new Customer(); // \GreenToHome\Model\Customer
         $customer->setName($order->getOrderCustomer()->getFirstName() . ' ' . $order->getOrderCustomer()->getLastName());
         $customer->setEmail($order->getOrderCustomer()->getEmail());
-        $customer->setPhone($shippingAddress->getPhoneNumber());
+        $customer->setPhone($shippingAddress->getPhoneNumber() ?: "0");
 
         $customerAddress = new Address(); // \GreenToHome\Model\Address
         $customerAddress->setCountry($shippingAddress->getCountry()->getIso());

@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace NewMobilityEnterprise;
+namespace Erive\GreenToHome;
 
 use Shopware\Core\Framework\Plugin;
 
@@ -8,7 +8,7 @@ if (file_exists(__DIR__ . '/../vendor/autoload.php')) {
     require_once __DIR__ . '/../vendor/autoload.php';
 }
 
-class GreenToHome extends Plugin
+class EriveDelivery extends Plugin
 {
 //
 }
