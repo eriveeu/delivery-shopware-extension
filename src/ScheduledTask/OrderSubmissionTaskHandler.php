@@ -1,8 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace Erive\GreenToHome\ScheduledTask;
+namespace Erive\Delivery\ScheduledTask;
 
-use Erive\GreenToHome\Service\OrderService;
+use Erive\Delivery\Service\OrderService;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\MessageQueue\ScheduledTask\ScheduledTaskHandler;
@@ -44,6 +44,6 @@ class OrderSubmissionTaskHandler extends ScheduledTaskHandler
     public function run(): void
     {
         (new OrderService($this->systemConfigService, $this->orderRepository))->processAllOrders();
-        $this->logger->notice('GreenToHome: Scheduled task ran');
+        $this->logger->notice('ERIVE.delivery: Scheduled task ran');
     }
 }
