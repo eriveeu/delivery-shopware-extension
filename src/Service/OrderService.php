@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Erive\GreenToHome\Service;
+namespace Erive\Delivery\Service;
 
 use Doctrine\DBAL\Driver\PDO\Exception;
 use Erive\Delivery\Api\CompanyApi;
@@ -20,7 +20,7 @@ use Shopware\Core\System\SystemConfig\SystemConfigService;
 
 class OrderService
 {
-    private string $gthEnv;
+    private string $eriveEnv;
     private string $apiKey;
     private string $customParcelIdField;
     private string $customStickerUrlField;
@@ -34,10 +34,10 @@ class OrderService
     ) {
         $this->systemConfigService = $systemConfigService;
         $this->orderRepository = $orderRepository;
-        $this->gthEnv = $systemConfigService->get('EriveDelivery.config.gthEnvironment');
+        $this->eriveEnv = $systemConfigService->get('EriveDelivery.config.eriveEnvironment');
         $this->apiKey = $systemConfigService->get('EriveDelivery.config.apikey');
-        $this->customParcelIdField = $systemConfigService->get('EriveDelivery.config.parcelIdFieldName') ?? 'custom_gth_ParcelID';
-        $this->customStickerUrlField = $systemConfigService->get('EriveDelivery.config.stickerUrlFieldName') ?? 'custom_gth_StickerUrl';
+        $this->customParcelIdField = $systemConfigService->get('EriveDelivery.config.parcelIdFieldName') ?? 'custom_EriveDelivery_ParcelID';
+        $this->customStickerUrlField = $systemConfigService->get('EriveDelivery.config.stickerUrlFieldName') ?? 'custom_EriveDelivery_StickerUrl';
 
         $this->context = Context::createDefaultContext();
     }
@@ -70,7 +70,7 @@ class OrderService
         return $results;
     }
 
-    private function populateGthParcel($order): Parcel
+    private function populateEriveDeliveryParcel($order): Parcel
     {
         $shippingAddress = $order->getDeliveries()->first()->getShippingOrderAddress();
 
@@ -103,7 +103,7 @@ class OrderService
         $parcelWeight = 0;
 
         // Configuring Parcel
-        $parcel = new Parcel(); // \GreenToHome\Model\Parcel | Parcel to submit
+        $parcel = new Parcel(); // \Erive\Delivery\Api\Model\Parcel | Parcel to submit
         $parcel->setExternalReference($order->getOrderNumber());
         // Sets the comment to parcel volume if there is no comment defined
         $parcel->setComment($order->getCustomerComment() ?: 'Package volume: ' . $parcelVolume . 'm^3');
@@ -113,12 +113,12 @@ class OrderService
         $parcel->setHeight($parcelHeight);
         $parcel->setPackagingUnits($totalPackagingUnits);
 
-        $customer = new Customer(); // \GreenToHome\Model\Customer
+        $customer = new Customer(); // \Erive\Delivery\Api\Model\Customer
         $customer->setName($order->getOrderCustomer()->getFirstName() . ' ' . $order->getOrderCustomer()->getLastName());
         $customer->setEmail($order->getOrderCustomer()->getEmail());
         $customer->setPhone($shippingAddress->getPhoneNumber() ?: "0");
 
-        $customerAddress = new Address(); // \GreenToHome\Model\Address
+        $customerAddress = new Address(); // \Erive\Delivery\Api\Model\Address
         $customerAddress->setCountry($shippingAddress->getCountry()->getIso());
         $customerAddress->setCity($shippingAddress->getCity());
         $customerAddress->setZip($shippingAddress->getZipcode());
@@ -133,12 +133,12 @@ class OrderService
         return $parcel;
     }
 
-    private function publishParcelToGth(Parcel $parcel)
+    private function publishParcelToEriveDelivery(Parcel $parcel)
     {
         $config = Configuration::getDefaultConfiguration()->setApiKey('key', $this->apiKey);
 
         try {
-            // Save parcel to GTH and retrieve assigned ID and Sticker URL
+            // Save parcel to ERIVE.delivery and retrieve assigned ID and Sticker URL
             $apiInstance = new CompanyApi(new Client, $config);
             return $apiInstance->submitParcel($parcel);
         } catch (Exception $e) {
@@ -150,21 +150,21 @@ class OrderService
 
     private function populateParcelData($order)
     {
-        $preparedParcel = $this->populateGthParcel($order);
-        $pubParcel = $this->publishParcelToGth($preparedParcel);
+        $preparedParcel = $this->populateEriveDeliveryParcel($order);
+        $pubParcel = $this->publishParcelToEriveDelivery($preparedParcel);
 
-        $gthParcelId = $pubParcel->getParcel()->getId();
-        $gthStickerUrl = $pubParcel->getParcel()->getLabelUrl();
+        $eriveParcelId = $pubParcel->getParcel()->getId();
+        $eriveStickerUrl = $pubParcel->getParcel()->getLabelUrl();
 
-        // Set custom fields to GTH Parcel ID and Sticker URL
+        // Set custom fields to ERIVE.delivery Parcel ID and Sticker URL
         $customFields = $order->getCustomFields();
-        $customFields[$this->customParcelIdField] = $gthParcelId;
-        $customFields[$this->customStickerUrlField] = $gthStickerUrl;
+        $customFields[$this->customParcelIdField] = $eriveParcelId;
+        $customFields[$this->customStickerUrlField] = $eriveStickerUrl;
 
         // TODO : set order status to "In Progress"
         $this->orderRepository->update([['id' => $order->getId(), 'customFields' => $customFields]], $this->context);
 
-        print_r('Order #' . $order->getOrderNumber() . ' -> GTH-Paketnummer: ' . $gthParcelId . PHP_EOL);
+        print_r('Order #' . $order->getOrderNumber() . ' -> Erive-Paketnummer: ' . $eriveParcelId . PHP_EOL);
     }
 
     public function processAllOrders(): void

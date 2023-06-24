@@ -1,9 +1,9 @@
 <?php declare(strict_types=1);
 
-namespace Erive\GreenToHome\Listener;
+namespace Erive\Delivery\Listener;
 
 use Psr\Log\LoggerInterface;
-use Erive\GreenToHome\Service\OrderService;
+use Erive\Delivery\Service\OrderService;
 
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Event\EntityWrittenEvent;
@@ -29,7 +29,7 @@ class OrderPaidListener
     public function onOrderTransactionState(OrderStateMachineStateChangeEvent $event): void
     {
         $id = $event->getOrderId();
-        $this->logger->notice('GreenToHome: Processing order # ' . $id);
+        $this->logger->notice('ERIVE.delivery: Processing order # ' . $id);
         (new OrderService($this->systemConfigService, $this->orderRepository))->processOrderById($id);
     }
 }

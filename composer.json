@@ -21,11 +21,11 @@
   "license": "MIT",
   "autoload": {
     "psr-4": {
-      "Erive\\GreenToHome\\": "src/"
+      "Erive\\EriveDelivery\\": "src/"
     }
   },
   "extra": {
-    "shopware-plugin-class": "Erive\\GreenToHome\\EriveDelivery",
+    "shopware-plugin-class": "Erive\\EriveDelivery\\EriveDelivery",
     "copyright": "Erive GmbH",
     "label": {
       "de-DE": "ERIVE.delivery",
