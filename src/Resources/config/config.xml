@@ -17,7 +17,7 @@
 <!--            <helpText lang="de-DE">Bitte trage deine persönliche E-Mail Adresse ein</helpText>-->
 <!--        </input-field>-->
         <input-field type="single-select">
-            <name>gthEnvironment</name>
+            <name>eriveEnvironment</name>
             <options>
                 <option>
                     <id>dev</id>
@@ -36,22 +36,22 @@
                 </option>
             </options>
             <defaultValue>dev</defaultValue>
-            <label>GTH Server Environment</label>
-            <label lang="de-DE">GTH Serverumgebung</label>
+            <label>ERIVE Server Environment</label>
+            <label lang="de-DE">ERIVE Serverumgebung</label>
         </input-field>
         <input-field type="text">
             <name>parcelIdFieldName</name>
             <copyable>true</copyable>
-            <placeholder>custom_gth_ParcelId</placeholder>
+            <placeholder>custom_EriveDelivery_ParcelID</placeholder>
             <label>Custom field name</label>
-            <helpText>Full name for custom field added to Order to hold GTH parcel ID</helpText>
+            <helpText>Full name for custom field added to Order to hold ERIVE.delivery parcel ID</helpText>
         </input-field>
         <input-field type="text">
             <name>stickerUrlFieldName</name>
             <copyable>true</copyable>
-            <placeholder>custom_gth_StickerUrl</placeholder>
+            <placeholder>custom_EriveDelivery_StickerUrl</placeholder>
             <label>Custom field name</label>
-            <helpText>Full name for custom field added to Order to hold GTH sticker URL</helpText>
+            <helpText>Full name for custom field added to Order to hold ERIVE.delivery sticker URL</helpText>
         </input-field>
         <input-field type="password">
             <name>apikey</name>
