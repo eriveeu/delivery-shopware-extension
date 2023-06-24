@@ -1,46 +1,47 @@
 {
-    "name": "newmobilityenterprise/greentohome-shopware",
-    "description": "GREEN TO HOME",
-    "type": "shopware-platform-plugin",
-    "version": "1.0.0",
-    "authors": [
-        {
-            "name": "New Mobility Enterprise - NME GmbH"
-        }
-    ],
-    "require": {
-        "newmobilityenterprise/gth-api-client": "dev-develop"
-    },
-    "repositories": [
-        {
-            "type": "vcs",
-            "url": "https://github.com/newmobilityenterprise/greentohome-apiclient-php.git"
-        }
-    ],
-    "license": "MIT",
-    "autoload": {
-        "psr-4": {
-            "NewMobilityEnterprise\\": "src/"
-        }
-    },
-    "extra": {
-        "shopware-plugin-class": "NewMobilityEnterprise\\GreenToHome",
-        "copyright": "New Mobility Enterprise - NME GmbH",
-        "label": {
-            "de-DE": "GREEN TO HOME",
-            "en-GB": "GREEN TO HOME"
-        },
-        "description": {
-            "de-DE": "GREEN TO HOME Fulfilment Extension",
-            "en-GB": "GREEN TO HOME Fulfilment Extension"
-        },
-        "manufacturerLink": {
-            "de-DE": "https://greentohome.at",
-            "en-GB": "https://greentohome.at"
-        },
-        "supportLink": {
-            "de-DE": "https://greentohome.at/kontakt",
-            "en-GB": "https://greentohome.at/kontakt"
-        }
+  "name": "erive/delivery-shopware",
+  "description": "ERIVE.delivery",
+  "type": "shopware-platform-plugin",
+  "version": "0.0.1",
+  "authors": [
+    {
+      "name": "Erive GmbH"
     }
+  ],
+  "require": {
+    "php": "^7.4 || ^8.0",
+    "eriveeu/delivery-api-client": "^0.1.0"
+  },
+  "repositories": [
+    {
+      "type": "vcs",
+      "url": "https://github.com/eriveeu/delivery-api-client-php.git"
+    }
+  ],
+  "license": "MIT",
+  "autoload": {
+    "psr-4": {
+      "Erive\\GreenToHome\\": "src/"
+    }
+  },
+  "extra": {
+    "shopware-plugin-class": "Erive\\GreenToHome\\EriveDelivery",
+    "copyright": "Erive GmbH",
+    "label": {
+      "de-DE": "ERIVE.delivery",
+      "en-GB": "ERIVE.delivery"
+    },
+    "description": {
+      "de-DE": "ERIVE.delivery Fulfilment Extension",
+      "en-GB": "ERIVE.delivery Fulfilment Extension"
+    },
+    "manufacturerLink": {
+      "de-DE": "https://greentohome.at",
+      "en-GB": "https://greentohome.at"
+    },
+    "supportLink": {
+      "de-DE": "https://greentohome.at/kontakt",
+      "en-GB": "https://greentohome.at/kontakt"
+    }
+  }
 }

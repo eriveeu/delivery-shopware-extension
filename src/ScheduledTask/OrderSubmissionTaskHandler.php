@@ -1,17 +1,17 @@
 <?php
 
-namespace NewMobilityEnterprise\ScheduledTask;
+namespace Erive\GreenToHome\ScheduledTask;
 
-use Shopware\Core\Framework\MessageQueue\ScheduledTask\ScheduledTaskHandler;
+use Erive\GreenToHome\Service\OrderService;
 use Psr\Log\LoggerInterface;
-
-// use Shopware\Core\System\SystemConfig\SystemConfigService;
-// use NewMobilityEnterprise\Service\OrderService;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\MessageQueue\ScheduledTask\ScheduledTaskHandler;
+use Shopware\Core\System\SystemConfig\SystemConfigService;
 
 /**
  * DI Config:
  *
- * <service id="NewMobilityEnterprise\OrderSubmissionTaskHandler">
+ * <service id="Erive\OrderSubmissionTaskHandler">
  * <argument type="service" id="scheduled_task.repository"/>
  * <tag name="messenger.message_handler"/>
  * </service>
@@ -26,9 +26,8 @@ class OrderSubmissionTaskHandler extends ScheduledTaskHandler
         EntityRepositoryInterface $scheduledTaskRepository,
         LoggerInterface $logger,
         SystemConfigService $systemConfigService,
-        EntityRepositoryInterface $orderRepository,
-    )
-    {
+        EntityRepositoryInterface $orderRepository
+    ) {
         parent::__construct($scheduledTaskRepository);
 
         $this->logger = $logger;
@@ -43,7 +42,7 @@ class OrderSubmissionTaskHandler extends ScheduledTaskHandler
 
     public function run(): void
     {
-        // (new OrderService($this->systemConfigService, $this->orderRepository))->processAllOrders();
+        (new OrderService($this->systemConfigService, $this->orderRepository))->processAllOrders();
         $this->logger->notice('GreenToHome: Scheduled task ran');
     }
 }

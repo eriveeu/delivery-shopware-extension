@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace NewMobilityEnterprise\Command;
+namespace Erive\GreenToHome\Command;
 
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -9,7 +9,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 
-use NewMobilityEnterprise\Service\OrderService;
+use Erive\GreenToHome\Service\OrderService;
 
 class OrderSubmissionCommand extends Command
 {
@@ -19,9 +19,8 @@ class OrderSubmissionCommand extends Command
 
     public function __construct(
         SystemConfigService $systemConfigService,
-        EntityRepositoryInterface $orderRepository,
-    )
-    {
+        EntityRepositoryInterface $orderRepository
+    ) {
         parent::__construct();
 
         $this->systemConfigService = $systemConfigService;

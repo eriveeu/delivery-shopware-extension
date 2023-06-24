@@ -8,30 +8,25 @@
         <defaults autowire="true" autoconfigure="true" public="false">
         </defaults>
 
-        <service id="NewMobilityEnterprise\Command\OrderSubmissionCommand">
+        <service id="Erive\GreenToHome\Command\OrderSubmissionCommand">
             <tag name="console.command" />
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService" />
             <argument type="service" id="order.repository" />
         </service>
 
-        <service id="NewMobilityEnterprise\Subscriber\OrderSubscriber">
-            <tag name="kernel.event_subscriber"/>
-            <argument type="service" id="logger" />
-            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService" />
-            <argument type="service" id="order.repository" />
-        </service>
-
-        <!-- <service id="NewMobilityEnterprise\Listener\OrderPaidListener" >
+        <service id="Erive\GreenToHome\Listener\OrderPaidListener" >
+            <!-- <tag name="kernel.event_listener" event="order.written" method="onOrderTransactionState" /> -->
             <tag name="kernel.event_listener" event="state_enter.order_transaction.state.paid" method="onOrderTransactionState" />
             <argument type="service" id="logger" />
-            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService" />
+            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService" />   
             <argument type="service" id="order.repository" />
-        </service> -->
+        </service>
 
-        <service id="NewMobilityEnterprise\ScheduledTask\OrderSubmissionTask">
+        <service id="Erive\GreenToHome\ScheduledTask\OrderSubmissionTask">
             <tag name="shopware.scheduled.task" />
         </service>
-        <service id="NewMobilityEnterprise\ScheduledTask\OrderSubmissionTaskHandler">
+
+        <service id="Erive\GreenToHome\ScheduledTask\OrderSubmissionTaskHandler">
             <tag name="messenger.message_handler" />
             <argument type="service" id="scheduled_task.repository"/>
             <argument type="service" id="logger" />
@@ -39,10 +34,10 @@
             <argument type="service" id="order.repository" />
         </service>
 
-        <service id="NewMobilityEnterprise\ScheduledTask\ParcelDeliveredTask">
+        <service id="Erive\GreenToHome\ScheduledTask\ParcelDeliveredTask">
             <tag name="shopware.scheduled.task" />
         </service>
-        <service id="NewMobilityEnterprise\ScheduledTask\ParcelDeliveredTaskHandler">
+        <service id="Erive\GreenToHome\ScheduledTask\ParcelDeliveredTaskHandler">
             <tag name="messenger.message_handler" />
             <argument type="service" id="scheduled_task.repository"/>
             <argument type="service" id="logger" />
