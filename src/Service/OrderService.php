@@ -5,6 +5,7 @@ namespace Erive\Delivery\Service;
 use Doctrine\DBAL\Driver\PDO\Exception;
 use Erive\Delivery\Api\CompanyApi;
 use Erive\Delivery\Configuration;
+use Erive\Delivery\EriveDelivery;
 use Erive\Delivery\Model\Address;
 use Erive\Delivery\Model\Customer;
 use Erive\Delivery\Model\Parcel;
@@ -36,8 +37,8 @@ class OrderService
         $this->orderRepository = $orderRepository;
         $this->eriveEnv = $systemConfigService->get('EriveDelivery.config.eriveEnvironment');
         $this->apiKey = $systemConfigService->get('EriveDelivery.config.apikey');
-        $this->customParcelIdField = $systemConfigService->get('EriveDelivery.config.parcelIdFieldName') ?? 'custom_EriveDelivery_ParcelID';
-        $this->customStickerUrlField = $systemConfigService->get('EriveDelivery.config.stickerUrlFieldName') ?? 'custom_EriveDelivery_StickerUrl';
+        $this->customParcelIdField = EriveDelivery::FIELD_PARCEL_ID;
+        $this->customStickerUrlField = EriveDelivery::FIELD_STICKER_URL;
 
         $this->context = Context::createDefaultContext();
     }
