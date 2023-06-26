@@ -25,7 +25,7 @@ class EriveDelivery extends Plugin
 
         $connection = $this->container->get(Connection::class);
         $date = date('Y-m-d') . ' 00:00:00.000';
-        
+
         $setId =$this->getId($connection, 'custom_field_set', 'name', EriveDelivery::FIELD_SET) ?? Uuid::randomHex();
         $stickerId = $this->getId($connection, 'custom_field', 'name', EriveDelivery::FIELD_STICKER_URL) ?? Uuid::randomHex();
         $parcelId = $this->getId($connection, 'custom_field', 'name', EriveDelivery::FIELD_PARCEL_ID) ?? Uuid::randomHex();
@@ -34,7 +34,7 @@ class EriveDelivery extends Plugin
         $connection->exec("
             INSERT IGNORE INTO custom_field_set (id, name, config, active, app_id, position, global, created_at, updated_at)
             VALUES 
-                (X'" . $setId . "', '" . EriveDelivery::FIELD_SET . "', '{\"label\":{\"en-GB\":null}}', 1, NULL, 1, 0, '" . $date . "', NULL);
+                (X'" . $setId . "', '" . EriveDelivery::FIELD_SET . "', '{\"label\":{\"en-GB\":\"ERIVE.delivery\"}}', 1, NULL, 1, 0, '" . $date . "', NULL);
 
             INSERT IGNORE INTO custom_field_set_relation (id, set_id, entity_name, created_at, updated_at)
             VALUES 
