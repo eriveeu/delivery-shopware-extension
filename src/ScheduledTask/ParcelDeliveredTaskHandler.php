@@ -2,21 +2,12 @@
 
 namespace Erive\Delivery\ScheduledTask;
 
-use Shopware\Core\Framework\MessageQueue\ScheduledTask\ScheduledTaskHandler;
-use Psr\Log\LoggerInterface;
-
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
-// use Shopware\Core\System\SystemConfig\SystemConfigService;
 // use Erive\Delivery\Service\OrderService;
+use Psr\Log\LoggerInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\MessageQueue\ScheduledTask\ScheduledTaskHandler;
+// use Shopware\Core\System\SystemConfig\SystemConfigService;
 
-/**
- * DI Config:
- *
- * <service id="Erive\Delivery\ScheduledTask\ParcelDeliveredTaskHandler">
- * <argument type="service" id="scheduled_task.repository"/>
- * <tag name="messenger.message_handler"/>
- * </service>
- */
 class ParcelDeliveredTaskHandler extends ScheduledTaskHandler {
     private LoggerInterface $logger;
 

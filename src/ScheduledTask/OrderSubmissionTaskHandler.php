@@ -8,14 +8,6 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\MessageQueue\ScheduledTask\ScheduledTaskHandler;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 
-/**
- * DI Config:
- *
- * <service id="Erive\OrderSubmissionTaskHandler">
- * <argument type="service" id="scheduled_task.repository"/>
- * <tag name="messenger.message_handler"/>
- * </service>
- */
 class OrderSubmissionTaskHandler extends ScheduledTaskHandler
 {
     private LoggerInterface $logger;

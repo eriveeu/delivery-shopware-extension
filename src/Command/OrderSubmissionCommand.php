@@ -2,14 +2,12 @@
 
 namespace Erive\Delivery\Command;
 
+use Erive\Delivery\Service\OrderService;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
-use Shopware\Core\System\SystemConfig\SystemConfigService;
-
-use Erive\Delivery\Service\OrderService;
 
 class OrderSubmissionCommand extends Command
 {

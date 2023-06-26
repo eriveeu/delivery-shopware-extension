@@ -1,8 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace NewMobilityEnterprise\Subscriber;
+namespace Erive\Delivery\Subscriber;
 
-use NewMobilityEnterprise\Service\OrderService;
+use Erive\Delivery\Service\OrderService;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Order\Event\OrderStateMachineStateChangeEvent;
 use Shopware\Core\Content\Product\ProductEntity;
