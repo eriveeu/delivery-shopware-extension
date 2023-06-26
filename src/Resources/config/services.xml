@@ -21,11 +21,11 @@
             <tag name="kernel.event_listener" event="state_enter.order_transaction.state.paid" method="onOrderTransactionState" />
         </service>
 
-        <service id="Erive\Delivery\ScheduledTask\OrderSubmissionTask">
+        <service id="Erive\Delivery\ScheduledTask\OrderSubmission\OrderSubmissionTask">
             <tag name="shopware.scheduled.task" />
         </service>
 
-        <service id="Erive\Delivery\ScheduledTask\OrderSubmissionTaskHandler">
+        <service id="Erive\Delivery\ScheduledTask\OrderSubmission\OrderSubmissionTaskHandler">
             <argument type="service" id="scheduled_task.repository"/>
             <argument type="service" id="logger" />
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService" />
@@ -33,15 +33,16 @@
             <tag name="messenger.message_handler" />
         </service>
 
-        <service id="Erive\Delivery\ScheduledTask\ParcelDeliveredTask">
+        <!-- <service id="Erive\Delivery\ScheduledTask\ParcelDelivered\ParcelDeliveredTask">
             <tag name="shopware.scheduled.task" />
         </service>
-        <service id="Erive\Delivery\ScheduledTask\ParcelDeliveredTaskHandler">
+
+        <service id="Erive\Delivery\ScheduledTask\ParcelDelivered\ParcelDeliveredTaskHandler">
             <tag name="messenger.message_handler" />
             <argument type="service" id="scheduled_task.repository"/>
             <argument type="service" id="logger" />
-            <!-- <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService" />
-            <argument type="service" id="order.repository" /> -->
-        </service>
+            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService" />
+            <argument type="service" id="order.repository" />
+        </service> -->
     </services>
 </container>
