@@ -4,7 +4,7 @@ namespace Erive\Delivery\ScheduledTask\OrderSubmission;
 
 use Erive\Delivery\Service\OrderService;
 use Psr\Log\LoggerInterface;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\MessageQueue\ScheduledTask\ScheduledTaskHandler;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 
@@ -12,13 +12,13 @@ class OrderSubmissionTaskHandler extends ScheduledTaskHandler
 {
     private LoggerInterface $logger;
     private SystemConfigService $systemConfigService;
-    private EntityRepositoryInterface $orderRepository;
+    private EntityRepository $orderRepository;
 
     public function __construct(
-        EntityRepositoryInterface $scheduledTaskRepository,
+        EntityRepository $scheduledTaskRepository,
         LoggerInterface $logger,
         SystemConfigService $systemConfigService,
-        EntityRepositoryInterface $orderRepository
+        EntityRepository $orderRepository
     ) {
         parent::__construct($scheduledTaskRepository);
 
