@@ -9,7 +9,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class OrderSubmissionCommand extends Command
+class SubmitOrders extends Command
 {
     const SUCCESS = 0;
     private SystemConfigService $systemConfigService;
@@ -28,7 +28,8 @@ class OrderSubmissionCommand extends Command
     // Provides a description, printed out in bin/console
     protected function configure(): void
     {
-        $this->setName('erive:submit-orders')->setDescription('Synchronizes orders from Shopware to GTH System.');
+        $this->setName('erive:submit-orders');
+        $this->setDescription('Synchronizes all orders from Shopware to ERIVE.delivery');
     }
 
     // Actual code executed in the command
