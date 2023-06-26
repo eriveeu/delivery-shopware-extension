@@ -33,10 +33,10 @@
             <tag name="messenger.message_handler" />
         </service>
 
-        <service id="Erive\GreenToHome\ScheduledTask\ParcelDeliveredTask">
+        <service id="Erive\Delivery\ScheduledTask\ParcelDeliveredTask">
             <tag name="shopware.scheduled.task" />
         </service>
-        <service id="Erive\GreenToHome\ScheduledTask\ParcelDeliveredTaskHandler">
+        <service id="Erive\Delivery\ScheduledTask\ParcelDeliveredTaskHandler">
             <tag name="messenger.message_handler" />
             <argument type="service" id="scheduled_task.repository"/>
             <argument type="service" id="logger" />
