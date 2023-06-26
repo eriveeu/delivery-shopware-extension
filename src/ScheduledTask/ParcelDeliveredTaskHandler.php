@@ -42,7 +42,7 @@ class ParcelDeliveredTaskHandler extends ScheduledTaskHandler {
     }
 
     public function run(): void {
-        $this->logger->notice('GreenToHome: Updating order status for delivered parcels');
+        $this->logger->notice('ERIVE.delivery: Updating order status for delivered parcels');
         // (new ShopwareToGTH($this->systemConfigService, $this->orderRepository))->processAllOrders();
     }
 }
