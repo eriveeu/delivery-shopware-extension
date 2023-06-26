@@ -13,7 +13,7 @@ use Shopware\Core\Framework\MessageQueue\ScheduledTask\ScheduledTask;
  */
 class ParcelDeliveredTask extends ScheduledTask {
     public static function getTaskName(): string {
-        return 'at.greentohome.parceldelivered';
+        return 'at.erive.parceldelivered';
     }
 
     public static function getDefaultInterval(): int {
