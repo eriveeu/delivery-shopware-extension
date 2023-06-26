@@ -1,13 +1,13 @@
 <?php declare(strict_types=1);
 
-namespace NewMobilityEnterprise\ScheduledTask;
+namespace Erive\Delivery\ScheduledTask;
 
 use Shopware\Core\Framework\MessageQueue\ScheduledTask\ScheduledTask;
 
 /**
  * DI Config:
  *
- * <service id="NewMobilityEnterprise\ScheduledTask\ParcelDeliveredTask">
+ * <service id="Erive\Delivery\ScheduledTask\ParcelDeliveredTask">
  * <tag name="shopware.scheduled.task"/>
  * </service>
  */

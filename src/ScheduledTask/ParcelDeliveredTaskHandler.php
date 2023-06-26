@@ -1,18 +1,18 @@
 <?php
 
-namespace NewMobilityEnterprise\ScheduledTask;
+namespace Erive\Delivery\ScheduledTask;
 
 use Shopware\Core\Framework\MessageQueue\ScheduledTask\ScheduledTaskHandler;
 use Psr\Log\LoggerInterface;
 
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 // use Shopware\Core\System\SystemConfig\SystemConfigService;
-// use NewMobilityEnterprise\Service\ShopwareToGTH;
+// use Erive\Delivery\Service\OrderService;
 
 /**
  * DI Config:
  *
- * <service id="NewMobilityEnterprise\ScheduledTask\ParcelDeliveredTaskHandler">
+ * <service id="Erive\Delivery\ScheduledTask\ParcelDeliveredTaskHandler">
  * <argument type="service" id="scheduled_task.repository"/>
  * <tag name="messenger.message_handler"/>
  * </service>
