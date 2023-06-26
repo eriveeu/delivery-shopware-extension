@@ -12,17 +12,20 @@ class ParcelDeliveredTaskHandler extends ScheduledTaskHandler {
     private LoggerInterface $logger;
     private SystemConfigService $systemConfigService;
     private EntityRepository $orderRepository;
+    private EntityRepository $orderDeliveryRepository;
 
     public function __construct(
         EntityRepository $scheduledTaskRepository,
         LoggerInterface $logger,
         SystemConfigService $systemConfigService,
-        EntityRepository $orderRepository
+        EntityRepository $orderRepository,
+        EntityRepository $orderDeliveryRepository
     ) {
         parent::__construct($scheduledTaskRepository);
         $this->logger = $logger;
         $this->systemConfigService = $systemConfigService;
         $this->orderRepository = $orderRepository;
+        $this->orderDeliveryRepository = $orderDeliveryRepository;
     }
 
     public static function getHandledMessages(): iterable {
@@ -30,7 +33,7 @@ class ParcelDeliveredTaskHandler extends ScheduledTaskHandler {
     }
 
     public function run(): void {
-        $this->logger->notice('ERIVE.delivery: Updating order status for delivered parcels');
-        // (new OrderService($this->systemConfigService, $this->orderRepository))->processAllOrders();
+        $this->logger->notice('ERIVE.delivery: Updating order status for delivered parcels (TODO)');
+        // (new OrderService($this->systemConfigService, $this->orderRepository, $this->orderDeliveryRepository))->processAllOrders();
     }
 }

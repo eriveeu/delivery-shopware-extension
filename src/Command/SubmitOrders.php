@@ -14,15 +14,18 @@ class SubmitOrders extends Command
     const SUCCESS = 0;
     private SystemConfigService $systemConfigService;
     private EntityRepository $orderRepository;
+    private EntityRepository $orderDeliveryRepository;
 
     public function __construct(
         SystemConfigService $systemConfigService,
-        EntityRepository $orderRepository
+        EntityRepository $orderRepository,
+        EntityRepository $orderDeliveryRepository
     ) {
         parent::__construct();
 
         $this->systemConfigService = $systemConfigService;
         $this->orderRepository = $orderRepository;
+        $this->orderDeliveryRepository = $orderDeliveryRepository;
     }
 
     // Provides a description, printed out in bin/console
@@ -35,7 +38,7 @@ class SubmitOrders extends Command
     // Actual code executed in the command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        (new OrderService($this->systemConfigService, $this->orderRepository))->processAllOrders();
+        (new OrderService($this->systemConfigService, $this->orderRepository, $this->orderDeliveryRepository))->processAllOrders();
 
         $output->writeln('Execution completed' . PHP_EOL);
         return self::SUCCESS;

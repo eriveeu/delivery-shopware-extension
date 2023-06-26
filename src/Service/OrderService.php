@@ -30,14 +30,17 @@ class OrderService
     private string $customStickerUrlField;
     private SystemConfigService $systemConfigService;
     private EntityRepository $orderRepository;
+    private EntityRepository $orderDeliveryRepository;
     private Context $context;
 
     public function __construct(
         SystemConfigService $systemConfigService,
-        EntityRepository $orderRepository
+        EntityRepository $orderRepository,
+        EntityRepository $orderDeliveryRepository
     ) {
         $this->systemConfigService = $systemConfigService;
         $this->orderRepository = $orderRepository;
+        $this->orderDeliveryRepository = $orderDeliveryRepository;
         $this->eriveEnv = $systemConfigService->get('EriveDelivery.config.eriveEnvironment');
         $this->apiKey = $systemConfigService->get('EriveDelivery.config.apikey') ?? '';
         $this->customParcelIdField = EriveDelivery::FIELD_PARCEL_ID;
@@ -47,6 +50,18 @@ class OrderService
         if (empty($this->apiKey)) {
             dd('Api key not set in configuration. Exiting');
         }
+    }
+
+    private function writeTrackingNumber($orderId, $trackingCode)
+    {
+        $criteria = new Criteria();
+        $criteria->addFilter(new EqualsFilter('id', $orderId));
+        $criteria->addAssociation('deliveries');
+        $delivery = $this->orderRepository->search($criteria, $this->context)->getEntities()->first()->getDeliveries();
+
+        $trackingCodes = count($delivery) > 0 ? $delivery->first()->getTrackingCodes() : [];
+        $trackingCodes[] = $trackingCode;
+        $this->orderDeliveryRepository->update([['id' => $delivery->first()->getId(), 'trackingCodes' => $trackingCodes]], $this->context);
     }
 
     private function getUnsubmittedOrders(): EntitySearchResult
@@ -185,6 +200,7 @@ class OrderService
         $customFields = $order->getCustomFields();
         $customFields[$this->customParcelIdField] = $eriveParcelId;
         $customFields[$this->customStickerUrlField] = $eriveStickerUrl;
+        $this->writeTrackingNumber($order->getId(), $eriveParcelId);
 
         // TODO : set order status to "In Progress"
         $this->orderRepository->update([['id' => $order->getId(), 'customFields' => $customFields]], $this->context);
