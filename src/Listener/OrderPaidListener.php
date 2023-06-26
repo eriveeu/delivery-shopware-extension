@@ -2,12 +2,11 @@
 
 namespace Erive\Delivery\Listener;
 
-use Psr\Log\LoggerInterface;
 use Erive\Delivery\Service\OrderService;
-
+use Psr\Log\LoggerInterface;
+use Shopware\Core\Checkout\Order\Event\OrderStateMachineStateChangeEvent;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Event\EntityWrittenEvent;
-use Shopware\Core\Checkout\Order\Event\OrderStateMachineStateChangeEvent;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 
 class OrderPaidListener

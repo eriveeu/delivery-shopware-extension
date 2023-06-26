@@ -2,8 +2,8 @@
 
 namespace Erive\Delivery;
 
-use PDO;
 use Doctrine\DBAL\Connection;
+use PDO;
 use Shopware\Core\Framework\Plugin;
 use Shopware\Core\Framework\Plugin\Context\InstallContext;
 use Shopware\Core\Framework\Plugin\Context\UninstallContext;

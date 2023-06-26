@@ -1,30 +1,21 @@
-<?php declare(strict_types=1);
+<?php
 
-namespace Erive\Delivery\ScheduledTask;
+namespace Erive\Delivery\ScheduledTask\OrderSubmission;
 
 use Erive\Delivery\Service\OrderService;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\MessageQueue\ScheduledTask\ScheduledTaskHandler;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryForwardCompatibilityDecorator;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 
-/**
- * DI Config:
- *
- * <service id="Erive\OrderSubmissionTaskHandler">
- * <argument type="service" id="scheduled_task.repository"/>
- * <tag name="messenger.message_handler"/>
- * </service>
- */
 class OrderSubmissionTaskHandler extends ScheduledTaskHandler
 {
-    private $logger;
+    private LoggerInterface $logger;
     private SystemConfigService $systemConfigService;
     private EntityRepositoryInterface $orderRepository;
 
     public function __construct(
-        EntityRepositoryForwardCompatibilityDecorator $scheduledTaskRepository,
+        EntityRepositoryInterface $scheduledTaskRepository,
         LoggerInterface $logger,
         SystemConfigService $systemConfigService,
         EntityRepositoryInterface $orderRepository
