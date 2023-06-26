@@ -14,21 +14,24 @@ class OrderPaidListener
     private $logger;
     private SystemConfigService $systemConfigService;
     private EntityRepository $orderRepository;
+    private EntityRepository $orderDeliveryRepository;
 
     public function __construct(
         LoggerInterface $logger,
         SystemConfigService $systemConfigService,
-        EntityRepository $orderRepository
+        EntityRepository $orderRepository,
+        EntityRepository $orderDeliveryRepository
     ) {
         $this->logger = $logger;
         $this->systemConfigService = $systemConfigService;
         $this->orderRepository = $orderRepository;
+        $this->orderDeliveryRepository = $orderDeliveryRepository;
     }
 
     public function onOrderTransactionState(OrderStateMachineStateChangeEvent $event): void
     {
         $id = $event->getOrderId();
         $this->logger->notice('ERIVE.delivery: Processing order # ' . $id);
-        (new OrderService($this->systemConfigService, $this->orderRepository))->processOrderById($id);
+        (new OrderService($this->systemConfigService, $this->orderRepository, $this->orderDeliveryRepository))->processOrderById($id);
     }
 }
