@@ -39,11 +39,14 @@ class OrderService
         $this->systemConfigService = $systemConfigService;
         $this->orderRepository = $orderRepository;
         $this->eriveEnv = $systemConfigService->get('EriveDelivery.config.eriveEnvironment');
-        $this->apiKey = $systemConfigService->get('EriveDelivery.config.apikey');
+        $this->apiKey = $systemConfigService->get('EriveDelivery.config.apikey') ?? '';
         $this->customParcelIdField = EriveDelivery::FIELD_PARCEL_ID;
         $this->customStickerUrlField = EriveDelivery::FIELD_STICKER_URL;
-
         $this->context = Context::createDefaultContext();
+
+        if (empty($this->apiKey)) {
+            dd('Api key not set in configuration. Exiting');
+        }
     }
 
     private function getUnsubmittedOrders(): EntitySearchResult
@@ -74,6 +77,18 @@ class OrderService
         return $results;
     }
 
+    private function needsLabel($item): bool
+    {
+        if (
+            $item->getType() !== 'product' || 
+            !empty($item->getParentId())
+        ) {
+            return false;
+        }
+        
+        return true;
+    }
+
     private function populateEriveDeliveryParcel($order): Parcel
     {
         $shippingAddress = $order->getDeliveries()->first()->getShippingOrderAddress();
@@ -97,13 +112,15 @@ class OrderService
                 $parcelLength = $parcelLength > $prodLength ?: $prodLength;
                 $parcelHeight += $prodHeight * $quantity;
 
-                $totalPackagingUnits += $quantity;
+                if ($this->needsLabel($item)) {
+                    $totalPackagingUnits += $quantity;
+                }
                 $parcelWeight += ($quantity * $prodWeight);
                 $parcelVolume += (floatval($prodWidth / 1000) * floatval($prodHeight / 1000) * floatval($prodLength / 1000)) * $quantity;
             }
         }
 
-        // Overwrite weight untill API is fixed
+        // Overwrite weight untill API allows heavy parcels
         $parcelWeight = 0;
 
         // Configuring Parcel
@@ -156,6 +173,10 @@ class OrderService
     {
         $preparedParcel = $this->populateEriveDeliveryParcel($order);
         $pubParcel = $this->publishParcelToEriveDelivery($preparedParcel);
+        if ($pubParcel === null || !$pubParcel['success']) { 
+            dump('Parcel not returned from API');
+            return;
+        }
 
         $eriveParcelId = $pubParcel->getParcel()->getId();
         $eriveStickerUrl = $pubParcel->getParcel()->getLabelUrl();
@@ -173,11 +194,13 @@ class OrderService
 
     private function processOrder($order): void
     {
-        $customFields = json_decode($order->getCustomFields(), true);
-
-        if (!array_key_exists('isReturnOrder', $customFields)) {
-            $this->populateParcelData($order);
+        $customFields = $order->getCustomFields();
+        if (is_array($customFields) && array_key_exists('isReturnOrder', $customFields) && $customFields['isReturnOrder']) {
+            print_r('Order #' . $order->getOrderNumber() . ' skipped (return order)' . PHP_EOL);
+            return;
         }
+
+        $this->populateParcelData($order);
     }
 
     public function processAllOrders(): void
