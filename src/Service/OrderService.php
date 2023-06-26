@@ -5,17 +5,22 @@ namespace Erive\Delivery\Service;
 use Doctrine\DBAL\Driver\PDO\Exception;
 use Erive\Delivery\Api\CompanyApi;
 use Erive\Delivery\Configuration;
+use Erive\Delivery\EriveDelivery;
 use Erive\Delivery\Model\Address;
 use Erive\Delivery\Model\Customer;
 use Erive\Delivery\Model\Parcel;
 use GuzzleHttp\Client;
 
+use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\AndFilter;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\ContainsFilter;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\OrFilter;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 
 class OrderService
@@ -36,8 +41,8 @@ class OrderService
         $this->orderRepository = $orderRepository;
         $this->eriveEnv = $systemConfigService->get('EriveDelivery.config.eriveEnvironment');
         $this->apiKey = $systemConfigService->get('EriveDelivery.config.apikey');
-        $this->customParcelIdField = $systemConfigService->get('EriveDelivery.config.parcelIdFieldName') ?? 'custom_EriveDelivery_ParcelID';
-        $this->customStickerUrlField = $systemConfigService->get('EriveDelivery.config.stickerUrlFieldName') ?? 'custom_EriveDelivery_StickerUrl';
+        $this->customParcelIdField = EriveDelivery::FIELD_PARCEL_ID;
+        $this->customStickerUrlField = EriveDelivery::FIELD_STICKER_URL;
 
         $this->context = Context::createDefaultContext();
     }
@@ -167,6 +172,15 @@ class OrderService
         print_r('Order #' . $order->getOrderNumber() . ' -> Erive-Paketnummer: ' . $eriveParcelId . PHP_EOL);
     }
 
+    private function processOrder($order): void
+    {
+        $customFields = json_decode($order->getCustomFields(), true);
+
+        if (!array_key_exists('isReturnOrder', $customFields)) {
+            $this->populateParcelData($order);
+        }
+    }
+
     public function processAllOrders(): void
     {
         $orders = $this->getUnsubmittedOrders();
@@ -179,7 +193,7 @@ class OrderService
         print_r('Following orders are being processed:' . PHP_EOL);
 
         foreach ($orders as $order) {
-            $this->populateParcelData($order);
+            $this->processOrder($order);
         }
     }
 
@@ -213,6 +227,6 @@ class OrderService
             return;
         }
 
-        $this->populateParcelData($order);
+        $this->processOrder($order);
     }
 }
