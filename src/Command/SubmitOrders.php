@@ -3,7 +3,7 @@
 namespace Erive\Delivery\Command;
 
 use Erive\Delivery\Service\OrderService;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -13,11 +13,11 @@ class SubmitOrders extends Command
 {
     const SUCCESS = 0;
     private SystemConfigService $systemConfigService;
-    private EntityRepositoryInterface $orderRepository;
+    private EntityRepository $orderRepository;
 
     public function __construct(
         SystemConfigService $systemConfigService,
-        EntityRepositoryInterface $orderRepository
+        EntityRepository $orderRepository
     ) {
         parent::__construct();
 

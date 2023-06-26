@@ -12,7 +12,7 @@ use Erive\Delivery\Model\Parcel;
 use GuzzleHttp\Client;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\AndFilter;
@@ -29,12 +29,12 @@ class OrderService
     private string $customParcelIdField;
     private string $customStickerUrlField;
     private SystemConfigService $systemConfigService;
-    private EntityRepositoryInterface $orderRepository;
+    private EntityRepository $orderRepository;
     private Context $context;
 
     public function __construct(
         SystemConfigService $systemConfigService,
-        EntityRepositoryInterface $orderRepository
+        EntityRepository $orderRepository
     ) {
         $this->systemConfigService = $systemConfigService;
         $this->orderRepository = $orderRepository;
