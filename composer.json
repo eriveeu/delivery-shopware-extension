@@ -2,7 +2,7 @@
   "name": "erive/delivery-shopware",
   "description": "ERIVE.delivery",
   "type": "shopware-platform-plugin",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "authors": [
     {
       "name": "Erive GmbH"

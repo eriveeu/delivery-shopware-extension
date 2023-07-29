@@ -26,8 +26,10 @@ class OrderService
 {
     private string $eriveEnv;
     private string $apiKey;
+    private string $apiTestKey;
     private string $customParcelIdField;
     private string $customStickerUrlField;
+    private string $customApiEndpoint;
     private SystemConfigService $systemConfigService;
     private EntityRepository $orderRepository;
     private EntityRepository $orderDeliveryRepository;
@@ -42,7 +44,9 @@ class OrderService
         $this->orderRepository = $orderRepository;
         $this->orderDeliveryRepository = $orderDeliveryRepository;
         $this->eriveEnv = $systemConfigService->get('EriveDelivery.config.eriveEnvironment');
-        $this->apiKey = $systemConfigService->get('EriveDelivery.config.apikey') ?? '';
+        $this->apiKey = $systemConfigService->get('EriveDelivery.config.apiKey') ?? '';
+        $this->apiTestKey = $systemConfigService->get('EriveDelivery.config.apiTestKey') ?? '';
+        $this->customApiEndpoint = $systemConfigService->get('EriveDelivery.config.customApiEndpoint') ?? '';
         $this->customParcelIdField = EriveDelivery::FIELD_PARCEL_ID;
         $this->customStickerUrlField = EriveDelivery::FIELD_STICKER_URL;
         $this->context = Context::createDefaultContext();
@@ -171,10 +175,20 @@ class OrderService
 
     private function publishParcelToEriveDelivery(Parcel $parcel)
     {
-        $config = Configuration::getDefaultConfiguration()->setApiKey('key', $this->apiKey);
+        if ($this->eriveEnv == "www"){
+            $config = Configuration::getDefaultConfiguration()->setApiKey('key', $this->apiKey);
+        } else {
+            $config = Configuration::getDefaultConfiguration()->setApiKey('key', $this->apiTestKey);
+        }
+        
+        if ($this->eriveEnv == "custom"){
+            $config->setHost($this->customApiEndpoint);
+        } else {
+            $config->setHost("https://" . $this->eriveEnv .".greentohome.at/api/v1");
+        }
 
         try {
-            // Save parcel to ERIVE.delivery and retrieve assigned ID and Sticker URL
+            // Save parcel to ERIVE.delivery and retrieve assigned ID and Label URL
             $apiInstance = new CompanyApi(new Client, $config);
             return $apiInstance->submitParcel($parcel);
         } catch (Exception $e) {
