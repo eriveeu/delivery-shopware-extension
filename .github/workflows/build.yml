@@ -7,4 +7,6 @@ jobs:
     name: Shopware CLI Action
     uses: FriendsOfShopware/shopware-cli-action@v1.0.1
     with:
-      extensionName: "EriveDelivery"
+      extensionName: EriveDelivery
+    secrets:
+      ghToken: ${{ secrets.GITHUB_TOKEN }}
