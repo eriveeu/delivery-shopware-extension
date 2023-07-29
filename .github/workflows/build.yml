@@ -4,6 +4,7 @@ on:
 
 jobs:
   build:
-    uses: FriendsOfShopware/shopware-cli-action@v1.0.1
-    with:
-      extensionName: "EriveDelivery"
+    - name: Shopware CLI Action
+      uses: FriendsOfShopware/shopware-cli-action@v1.0.1
+      with:
+        extensionName: "EriveDelivery"
