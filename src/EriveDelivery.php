@@ -42,8 +42,8 @@ class EriveDelivery extends Plugin
 
             INSERT IGNORE INTO custom_field (id, name, type, config, active, set_id, created_at, updated_at, allow_customer_write)
             VALUES
-                (X'" . $stickerId . "', '" . EriveDelivery::FIELD_STICKER_URL . "', 'text', '{\"customFieldType\":\"text\",\"customFieldPosition\":1,\"label\":{\"en-GB\":\"ERIVE.delivery Parcel ID\"},\"placeholder\":{\"en-GB\":null},\"helpText\":{\"en-GB\":null},\"componentName\":\"sw-field\",\"type\":\"text\"}', 1, X'" . $setId . "', '" . $date . "', NULL, 0),
-                (X'" . $parcelId . "', '" . EriveDelivery::FIELD_PARCEL_ID . "',   'text', '{\"customFieldType\":\"text\",\"customFieldPosition\":2,\"label\":{\"en-GB\":\"ERIVE.delivery Sticker URL\"},\"placeholder\":{\"en-GB\":null},\"helpText\":{\"en-GB\":null},\"componentName\":\"sw-field\",\"type\":\"text\"}', 1, X'" . $setId . "', '" . $date . "', NULL, 0);
+                (X'" . $stickerId . "', '" . EriveDelivery::FIELD_STICKER_URL . "', 'text', '{\"customFieldType\":\"text\",\"customFieldPosition\":1,\"label\":{\"en-GB\":\"ERIVE.delivery Label URL\"},\"placeholder\":{\"en-GB\":null},\"helpText\":{\"en-GB\":null},\"componentName\":\"sw-field\",\"type\":\"text\"}', 1, X'" . $setId . "', '" . $date . "', NULL, 0),
+                (X'" . $parcelId . "', '" . EriveDelivery::FIELD_PARCEL_ID . "',   'text', '{\"customFieldType\":\"text\",\"customFieldPosition\":2,\"label\":{\"en-GB\":\"ERIVE.delivery Tracking Code\"},\"placeholder\":{\"en-GB\":null},\"helpText\":{\"en-GB\":null},\"componentName\":\"sw-field\",\"type\":\"text\"}', 1, X'" . $setId . "', '" . $date . "', NULL, 0);
         ");
     }
 

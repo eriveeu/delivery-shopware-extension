@@ -21,30 +21,41 @@
             <options>
                 <option>
                     <id>dev</id>
-                    <name>DEV Server</name>
-                    <name lang="de-DE">Local Server</name>
+                    <name>dev.greentohome.at</name>
                 </option>
                 <option>
                     <id>stage</id>
-                    <name>STAGE Server</name>
-                    <name lang="de-DE">STAGE Server</name>
+                    <name>stage.greentohome.at</name>
                 </option>
                 <option>
-                    <id>prod</id>
-                    <name>PROD Server</name>
-                    <name lang="de-DE">PROD Server</name>
+                    <id>www</id>
+                    <name>www.greentohome.at</name>
+                </option>
+                <option>
+                    <id>custom</id>
+                    <name>Custom API Endpoint</name>
                 </option>
             </options>
             <defaultValue>dev</defaultValue>
             <label>ERIVE Server Environment</label>
             <label lang="de-DE">ERIVE Serverumgebung</label>
         </input-field>
+        <input-field>
+            <name>customApiEndpoint</name>
+            <label>Custom API Endpoint</label>
+            <helpText>Endpoint to use if Erive Server Environment is set to custom. e.g. ERIVE on your local machine, test environment</helpText>
+            <defaultValue>https://gth.test/api/v1</defaultValue>
+        </input-field>
         <input-field type="password">
-            <name>apikey</name>
-            <label>API Key</label>
+            <name>apiTestKey</name>
+            <label>Test API Key (DEV, STAGE, custom)</label>
+            <helpText>Company API Key for Testing</helpText>
+        </input-field>
+        <input-field type="password">
+            <name>apiKey</name>
+            <label>Production API Key</label>
             <label lang="de-DE">API Key</label>
-            <helpText>Your company api key</helpText>
-            <helpText lang="de-DE">Dein Company API Key</helpText>
+            <helpText>Company API Key for PROD</helpText>
         </input-field>
     </card>
 </config>
