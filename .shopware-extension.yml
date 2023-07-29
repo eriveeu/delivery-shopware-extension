@@ -1,0 +1,17 @@
+changelog:
+  enabled: true
+
+build:
+  zip:
+    composer:
+      enabled: true
+    assets:
+      enabled: true
+      enable_es_build_for_admin: false
+      enable_es_build_for_storefront: false
+    pack:
+      excludes:
+        paths:
+          - .idea
+          - var
+          - .gitignore
