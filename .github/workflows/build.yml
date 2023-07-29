@@ -4,6 +4,6 @@ on:
 
 jobs:
   build:
-    uses: FriendsOfShopware/actions/.github/workflows/store-shopware-cli.yml@main
+    uses: FriendsOfShopware/shopware-cli-action@v1.0.1
     with:
-      extensionName: ${{ github.event.repository.name }}
+      extensionName: "EriveDelivery"
