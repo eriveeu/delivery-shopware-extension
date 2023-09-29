@@ -27,17 +27,24 @@ class OrderService
     private string $eriveEnv;
     private string $apiKey;
     private string $apiTestKey;
-    private string $customParcelIdField;
-    private string $customStickerUrlField;
-    private string $customApiEndpoint;
-    private array $allowedDeliveryMethodIds;
-    private Context $context;
+    protected string $customParcelIdField;
+    protected string $customStickerUrlField;
+    protected string $customApiEndpoint;
+    protected array $allowedDeliveryMethodIds;
+    protected SystemConfigService $systemConfigService;
+    protected EntityRepository $orderRepository;
+    protected EntityRepository $orderDeliveryRepository;
+    protected Context $context;
 
     public function __construct(
-        protected SystemConfigService $systemConfigService,
-        protected EntityRepository $orderRepository,
-        protected EntityRepository $orderDeliveryRepository
+        SystemConfigService $systemConfigService,
+        EntityRepository $orderRepository,
+        EntityRepository $orderDeliveryRepository
     ) {
+        $this->systemConfigService = $systemConfigService;
+        $this->orderRepository = $orderRepository;
+        $this->orderDeliveryRepository = $orderDeliveryRepository;
+
         $this->allowedDeliveryMethodIds = $this->systemConfigService->get('EriveDelivery.config.deliveryMethods') ?? [];
         $this->eriveEnv = $this->systemConfigService->get('EriveDelivery.config.eriveEnvironment');
         $this->apiKey = $this->systemConfigService->get('EriveDelivery.config.apiKey') ?? '';
@@ -52,7 +59,7 @@ class OrderService
         }
     }
 
-    private function writeTrackingNumber($orderId, $trackingCode)
+    protected function writeTrackingNumber($orderId, $trackingCode)
     {
         $criteria = new Criteria();
         $criteria->addFilter(new EqualsFilter('id', $orderId));
@@ -64,7 +71,7 @@ class OrderService
         $this->orderDeliveryRepository->update([['id' => $delivery->first()->getId(), 'trackingCodes' => $trackingCodes]], $this->context);
     }
 
-    private function getUnsubmittedOrders(): EntitySearchResult
+    protected function getUnsubmittedOrders(): EntitySearchResult
     {
         $criteria = new Criteria();
         $criteria->addFilter(
@@ -94,7 +101,7 @@ class OrderService
         return $results;
     }
 
-    private function needsLabel($item): bool
+    protected function needsLabel($item): bool
     {
         if (
             $item->getType() !== 'product' || 
@@ -106,7 +113,7 @@ class OrderService
         return true;
     }
 
-    private function populateEriveDeliveryParcel($order): Parcel
+    protected function populateEriveDeliveryParcel($order): Parcel
     {
         $shippingAddress = $order->getDeliveries()->first()->getShippingOrderAddress();
 
@@ -171,7 +178,7 @@ class OrderService
         return $parcel;
     }
 
-    private function publishParcelToEriveDelivery(Parcel $parcel)
+    protected function publishParcelToEriveDelivery(Parcel $parcel)
     {
         if ($this->eriveEnv == "www"){
             $config = Configuration::getDefaultConfiguration()->setApiKey('key', $this->apiKey);
@@ -196,7 +203,7 @@ class OrderService
         return;
     }
 
-    private function populateParcelData($order)
+    protected function populateParcelData($order)
     {
         $preparedParcel = $this->populateEriveDeliveryParcel($order);
         $pubParcel = $this->publishParcelToEriveDelivery($preparedParcel);
@@ -220,7 +227,7 @@ class OrderService
         dump('Order #' . $order->getOrderNumber() . ' -> Erive-Paketnummer: ' . $eriveParcelId . PHP_EOL);
     }
 
-    private function processOrder($order): void
+    protected function processOrder($order): void
     {
         $customFields = $order->getCustomFields();
         if (is_array($customFields) && array_key_exists('isReturnOrder', $customFields) && $customFields['isReturnOrder']) {

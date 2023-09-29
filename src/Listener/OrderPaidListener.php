@@ -10,12 +10,18 @@ use Shopware\Core\System\SystemConfig\SystemConfigService;
 
 class OrderPaidListener
 {
+    protected $logger;
+    protected SystemConfigService $systemConfigService;
+    protected OrderService $orderService;
+
     public function __construct(
-        protected LoggerInterface $logger,
-        protected SystemConfigService $systemConfigService,
-        protected OrderService $orderService
+        LoggerInterface $logger,
+        SystemConfigService $systemConfigService,
+        OrderService $orderService
     ) {
-        //
+        $this->logger = $logger;
+        $this->systemConfigService = $systemConfigService;
+        $this->orderService = $orderService;
     }
 
     public function onOrderTransactionState(OrderStateMachineStateChangeEvent $event): void

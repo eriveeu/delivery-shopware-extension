@@ -9,7 +9,7 @@
     }
   ],
   "require": {
-    "php": "^8.0",
+    "php": "^7.4 || ^8.0",
     "shopware/core": "~6.4.0",
     "eriveeu/delivery-api-client": "^0.1.0"
   },

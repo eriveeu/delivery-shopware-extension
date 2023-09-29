@@ -7,13 +7,20 @@ use Psr\Log\LoggerInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\MessageQueue\ScheduledTask\ScheduledTaskHandler;
 
-class ParcelDeliveredTaskHandler extends ScheduledTaskHandler {
+class ParcelDeliveredTaskHandler extends ScheduledTaskHandler
+{
+    protected LoggerInterface $logger;
+    protected OrderService $orderService;
+    
     public function __construct(
         EntityRepository $scheduledTaskRepository,
-        protected LoggerInterface $logger,
-        protected OrderService $orderService
+        LoggerInterface $logger,
+        OrderService $orderService
     ) {
         parent::__construct($scheduledTaskRepository);
+
+        $this->logger = $logger;
+        $this->orderService = $orderService;
     }
 
     public static function getHandledMessages(): iterable {

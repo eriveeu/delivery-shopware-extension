@@ -10,11 +10,14 @@ use Symfony\Component\Console\Output\OutputInterface;
 class SubmitOrders extends Command
 {
     const SUCCESS = 0;
+    protected OrderService $orderService;
 
     public function __construct(
-        protected OrderService $orderService
+        OrderService $orderService
     ) {
         parent::__construct();
+
+        $this->orderService = $orderService;
     }
 
     // Provides a description, printed out in bin/console
