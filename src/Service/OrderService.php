@@ -219,10 +219,10 @@ class OrderService
         $customFields = $order->getCustomFields();
         $customFields[$this->customParcelIdField] = $eriveParcelId;
         $customFields[$this->customStickerUrlField] = $eriveStickerUrl;
-        $this->writeTrackingNumber($order->getId(), $eriveParcelId);
-
-        // TODO : set order status to "In Progress"
         $this->orderRepository->update([['id' => $order->getId(), 'customFields' => $customFields]], $this->context);
+        $this->writeTrackingNumber($order->getId(), $eriveParcelId);
+        
+        // TODO : set order status to "In Progress"
 
         dump('Order #' . $order->getOrderNumber() . ' -> Erive-Paketnummer: ' . $eriveParcelId . PHP_EOL);
     }
