@@ -234,22 +234,17 @@ class OrderService
             dump('Order #' . $order->getOrderNumber() . ' skipped (return order)' . PHP_EOL);
             return;
         }
-        
-        $orderDeliveryMethodIds = $order->getDeliveries()->getShippingMethodIds();
-        $wrongShipping = true;
 
-        foreach ($orderDeliveryMethodIds as $orderDeliveryMethodId) {
+        foreach ($order->getDeliveries()->getShippingMethodIds() as $orderDeliveryMethodId) {
             if (in_array($orderDeliveryMethodId, $this->allowedDeliveryMethodIds)) {
-                $wrongShipping = false;
+                $this->populateParcelData($order);
+                return;
             }
         }
 
-        if ($wrongShipping) {
-            dump(`Order #{$order->getOrderNumber()} skipped (wrong shipping method)` . PHP_EOL);
-            return;
-        }
+        dump(`Order #{$order->getOrderNumber()} skipped (wrong shipping method)` . PHP_EOL);
+        return;
 
-        $this->populateParcelData($order);
     }
 
     public function processAllOrders(): void
