@@ -109,7 +109,7 @@ class OrderService
         ) {
             return false;
         }
-        
+
         return true;
     }
 
@@ -185,7 +185,7 @@ class OrderService
         } else {
             $config = Configuration::getDefaultConfiguration()->setApiKey('key', $this->apiTestKey);
         }
-        
+
         if ($this->eriveEnv == "custom"){
             $config->setHost($this->customApiEndpoint);
         } else {
@@ -221,7 +221,7 @@ class OrderService
         $customFields[$this->customStickerUrlField] = $eriveStickerUrl;
         $this->orderRepository->update([['id' => $order->getId(), 'customFields' => $customFields]], $this->context);
         $this->writeTrackingNumber($order->getId(), $eriveParcelId);
-        
+
         // TODO : set order status to "In Progress"
 
         dump('Order #' . $order->getOrderNumber() . ' -> Erive-Paketnummer: ' . $eriveParcelId . PHP_EOL);
