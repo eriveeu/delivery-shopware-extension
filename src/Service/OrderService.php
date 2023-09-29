@@ -45,11 +45,11 @@ class OrderService
         $this->orderRepository = $orderRepository;
         $this->orderDeliveryRepository = $orderDeliveryRepository;
 
-        $this->allowedDeliveryMethodIds = $this->systemConfigService->get('EriveDelivery.config.deliveryMethods') ?? [];
-        $this->eriveEnv = $this->systemConfigService->get('EriveDelivery.config.eriveEnvironment');
-        $this->apiKey = $this->systemConfigService->get('EriveDelivery.config.apiKey') ?? '';
-        $this->apiTestKey = $this->systemConfigService->get('EriveDelivery.config.apiTestKey') ?? '';
-        $this->customApiEndpoint = $this->systemConfigService->get('EriveDelivery.config.customApiEndpoint') ?? '';
+        $this->allowedDeliveryMethodIds = $systemConfigService->get('EriveDelivery.config.deliveryMethods') ?? [];
+        $this->eriveEnv = $systemConfigService->get('EriveDelivery.config.eriveEnvironment');
+        $this->apiKey = $systemConfigService->get('EriveDelivery.config.apiKey') ?? '';
+        $this->apiTestKey = $systemConfigService->get('EriveDelivery.config.apiTestKey') ?? '';
+        $this->customApiEndpoint = $systemConfigService->get('EriveDelivery.config.customApiEndpoint') ?? '';
         $this->customParcelIdField = EriveDelivery::FIELD_PARCEL_ID;
         $this->customStickerUrlField = EriveDelivery::FIELD_STICKER_URL;
         $this->context = Context::createDefaultContext();
