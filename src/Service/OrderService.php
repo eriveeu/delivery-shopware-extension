@@ -30,23 +30,19 @@ class OrderService
     private string $customParcelIdField;
     private string $customStickerUrlField;
     private string $customApiEndpoint;
-    private SystemConfigService $systemConfigService;
-    private EntityRepository $orderRepository;
-    private EntityRepository $orderDeliveryRepository;
+    private array $allowedDeliveryMethodIds;
     private Context $context;
 
     public function __construct(
-        SystemConfigService $systemConfigService,
-        EntityRepository $orderRepository,
-        EntityRepository $orderDeliveryRepository
+        protected SystemConfigService $systemConfigService,
+        protected EntityRepository $orderRepository,
+        protected EntityRepository $orderDeliveryRepository
     ) {
-        $this->systemConfigService = $systemConfigService;
-        $this->orderRepository = $orderRepository;
-        $this->orderDeliveryRepository = $orderDeliveryRepository;
-        $this->eriveEnv = $systemConfigService->get('EriveDelivery.config.eriveEnvironment');
-        $this->apiKey = $systemConfigService->get('EriveDelivery.config.apiKey') ?? '';
-        $this->apiTestKey = $systemConfigService->get('EriveDelivery.config.apiTestKey') ?? '';
-        $this->customApiEndpoint = $systemConfigService->get('EriveDelivery.config.customApiEndpoint') ?? '';
+        $this->allowedDeliveryMethodIds = $this->systemConfigService->get('EriveDelivery.config.deliveryMethods') ?? [];
+        $this->eriveEnv = $this->systemConfigService->get('EriveDelivery.config.eriveEnvironment');
+        $this->apiKey = $this->systemConfigService->get('EriveDelivery.config.apiKey') ?? '';
+        $this->apiTestKey = $this->systemConfigService->get('EriveDelivery.config.apiTestKey') ?? '';
+        $this->customApiEndpoint = $this->systemConfigService->get('EriveDelivery.config.customApiEndpoint') ?? '';
         $this->customParcelIdField = EriveDelivery::FIELD_PARCEL_ID;
         $this->customStickerUrlField = EriveDelivery::FIELD_STICKER_URL;
         $this->context = Context::createDefaultContext();
@@ -75,6 +71,7 @@ class OrderService
             new AndFilter([
                 new EqualsFilter('customFields.' . $this->customParcelIdField, null),
                 new EqualsFilter('transactions.stateMachineState.technicalName', 'paid'),
+                new EqualsAnyFilter('deliveries.shippingMethodId', $this->allowedDeliveryMethodIds),
             ])
         );
         $criteria->addAssociations([
@@ -82,6 +79,7 @@ class OrderService
             'orderCustomer.customer',
             'deliveries.shippingOrderAddress',
             'deliveries.shippingOrderAddress.country',
+            'deliveries.shippingMethod',
             'transactions.stateMachineState.technicalName'
         ]);
 
@@ -192,7 +190,7 @@ class OrderService
             $apiInstance = new CompanyApi(new Client, $config);
             return $apiInstance->submitParcel($parcel);
         } catch (Exception $e) {
-            print_r('Exception when processing order number :' . $parcel->getExternalReference() . PHP_EOL . $e->getMessage() . PHP_EOL);
+            dump('Exception when processing order number :' . $parcel->getExternalReference() . PHP_EOL . $e->getMessage() . PHP_EOL);
         }
 
         return;
@@ -219,14 +217,28 @@ class OrderService
         // TODO : set order status to "In Progress"
         $this->orderRepository->update([['id' => $order->getId(), 'customFields' => $customFields]], $this->context);
 
-        print_r('Order #' . $order->getOrderNumber() . ' -> Erive-Paketnummer: ' . $eriveParcelId . PHP_EOL);
+        dump('Order #' . $order->getOrderNumber() . ' -> Erive-Paketnummer: ' . $eriveParcelId . PHP_EOL);
     }
 
     private function processOrder($order): void
     {
         $customFields = $order->getCustomFields();
         if (is_array($customFields) && array_key_exists('isReturnOrder', $customFields) && $customFields['isReturnOrder']) {
-            print_r('Order #' . $order->getOrderNumber() . ' skipped (return order)' . PHP_EOL);
+            dump('Order #' . $order->getOrderNumber() . ' skipped (return order)' . PHP_EOL);
+            return;
+        }
+        
+        $orderDeliveryMethodIds = $order->getDeliveries()->getShippingMethodIds();
+        $wrongShipping = true;
+
+        foreach ($orderDeliveryMethodIds as $orderDeliveryMethodId) {
+            if (in_array($orderDeliveryMethodId, $this->allowedDeliveryMethodIds)) {
+                $wrongShipping = false;
+            }
+        }
+
+        if ($wrongShipping) {
+            dump(`Order #{$order->getOrderNumber()} skipped (wrong shipping method)` . PHP_EOL);
             return;
         }
 
@@ -238,11 +250,11 @@ class OrderService
         $orders = $this->getUnsubmittedOrders();
 
         if (count($orders) === 0) {
-            print_r('No new unhandled orders found' . PHP_EOL);
+            dump('No new unhandled orders found' . PHP_EOL);
             return;
         }
 
-        print_r('Following orders are being processed:' . PHP_EOL);
+        dump('Following orders are being processed:' . PHP_EOL);
 
         foreach ($orders as $order) {
             $this->processOrder($order);
@@ -256,6 +268,7 @@ class OrderService
             new AndFilter([
                 new EqualsFilter('customFields.' . $this->customParcelIdField, null),
                 new EqualsFilter('transactions.stateMachineState.technicalName', 'paid'),
+                new EqualsAnyFilter('deliveries.shippingMethodId', $this->allowedDeliveryMethodIds),
                 new EqualsFilter('id', $id),
             ])
         );
@@ -264,7 +277,8 @@ class OrderService
             'orderCustomer.customer',
             'deliveries.shippingOrderAddress',
             'deliveries.shippingOrderAddress.country',
-            'transactions.stateMachineState.technicalName'
+            'deliveries.shippingMethod',
+            'transactions.stateMachineState.technicalName',
         ]);
 
         $order = null;
@@ -276,6 +290,7 @@ class OrderService
         }
 
         if (is_null($order)) {
+            dump('No orders found with id ' . $id . ', or order does not satisfy requirements');
             return;
         }
 
