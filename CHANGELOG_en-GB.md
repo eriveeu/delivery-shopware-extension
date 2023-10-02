@@ -1,0 +1,11 @@
+# 0.1.2
+- [feat: bump version](https://github.com/eriveeu/delivery-shopware-extension/commit/4b2994a)
+- [feat: update delivery-api-client depencency to](https://github.com/eriveeu/delivery-shopware-extension/commit/2ebd7e9)
+- [formatting](https://github.com/eriveeu/delivery-shopware-extension/commit/7c7fd3f)
+- [chore-formatting](https://github.com/eriveeu/delivery-shopware-extension/commit/5ed435a)
+- [refactor function](https://github.com/eriveeu/delivery-shopware-extension/commit/d9b2ce5)
+- [change OrderService.php](https://github.com/eriveeu/delivery-shopware-extension/commit/4f6ba1d)
+- [restore PHP 7.4 compatibility](https://github.com/eriveeu/delivery-shopware-extension/commit/2b2af1b)
+- [remove comments](https://github.com/eriveeu/delivery-shopware-extension/commit/3d87b42)
+- [Update composer.json](https://github.com/eriveeu/delivery-shopware-extension/commit/9ced8e3)
+- [add shipping method selection, php8](https://github.com/eriveeu/delivery-shopware-extension/commit/e9bbd3e)
