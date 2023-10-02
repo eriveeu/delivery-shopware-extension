@@ -59,7 +59,7 @@ class EriveDelivery extends Plugin
         $connection->exec('DELETE FROM custom_field_set WHERE name = "' . EriveDelivery::FIELD_SET . '"');
     }
 
-    private function getId(Connection $connection, string $table, string $field, string $value): ?string
+    protected function getId(Connection $connection, string $table, string $field, string $value): ?string
     {
         $search = $connection->executeQuery('SELECT id FROM ' . $table . ' WHERE ' . $field . '="' . $value . '"');
         return $search->rowCount() > 0 ? Uuid::fromBytesToHex($search->fetch(PDO::FETCH_ASSOC)['id']) : null;

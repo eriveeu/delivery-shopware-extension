@@ -57,5 +57,11 @@
             <label lang="de-DE">API Key</label>
             <helpText>Company API Key for PROD</helpText>
         </input-field>
+        <component name="sw-entity-multi-id-select">
+            <name>deliveryMethods</name>
+            <label>Whitelisted delivery methods for ERIVE.delivery</label>
+            <helpText>Orders placed with selected delivery methods will be submitted to the ERIVE.delivery platform</helpText>
+            <entity>shipping_method</entity>
+        </component>
     </card>
 </config>

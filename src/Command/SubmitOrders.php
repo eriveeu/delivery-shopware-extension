@@ -3,8 +3,6 @@
 namespace Erive\Delivery\Command;
 
 use Erive\Delivery\Service\OrderService;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
-use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -12,20 +10,14 @@ use Symfony\Component\Console\Output\OutputInterface;
 class SubmitOrders extends Command
 {
     const SUCCESS = 0;
-    private SystemConfigService $systemConfigService;
-    private EntityRepository $orderRepository;
-    private EntityRepository $orderDeliveryRepository;
+    protected OrderService $orderService;
 
     public function __construct(
-        SystemConfigService $systemConfigService,
-        EntityRepository $orderRepository,
-        EntityRepository $orderDeliveryRepository
+        OrderService $orderService
     ) {
         parent::__construct();
 
-        $this->systemConfigService = $systemConfigService;
-        $this->orderRepository = $orderRepository;
-        $this->orderDeliveryRepository = $orderDeliveryRepository;
+        $this->orderService = $orderService;
     }
 
     // Provides a description, printed out in bin/console
@@ -38,7 +30,7 @@ class SubmitOrders extends Command
     // Actual code executed in the command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        (new OrderService($this->systemConfigService, $this->orderRepository, $this->orderDeliveryRepository))->processAllOrders();
+        $this->orderService->processAllOrders();
 
         $output->writeln('Execution completed' . PHP_EOL);
         return self::SUCCESS;

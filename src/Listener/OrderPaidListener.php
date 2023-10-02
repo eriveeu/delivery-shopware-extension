@@ -5,33 +5,34 @@ namespace Erive\Delivery\Listener;
 use Erive\Delivery\Service\OrderService;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Order\Event\OrderStateMachineStateChangeEvent;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Event\EntityWrittenEvent;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 
 class OrderPaidListener
 {
-    private $logger;
-    private SystemConfigService $systemConfigService;
-    private EntityRepository $orderRepository;
-    private EntityRepository $orderDeliveryRepository;
+    protected $logger;
+    protected SystemConfigService $systemConfigService;
+    protected OrderService $orderService;
 
     public function __construct(
         LoggerInterface $logger,
         SystemConfigService $systemConfigService,
-        EntityRepository $orderRepository,
-        EntityRepository $orderDeliveryRepository
+        OrderService $orderService
     ) {
         $this->logger = $logger;
         $this->systemConfigService = $systemConfigService;
-        $this->orderRepository = $orderRepository;
-        $this->orderDeliveryRepository = $orderDeliveryRepository;
+        $this->orderService = $orderService;
     }
 
     public function onOrderTransactionState(OrderStateMachineStateChangeEvent $event): void
     {
-        $id = $event->getOrderId();
-        $this->logger->notice('ERIVE.delivery: Processing order # ' . $id);
-        (new OrderService($this->systemConfigService, $this->orderRepository, $this->orderDeliveryRepository))->processOrderById($id);
+        foreach($event->getOrder()->getDeliveries()->getShippingMethodIds() as $orderShippingMethodId) {
+            if (in_array($orderShippingMethodId, $this->systemConfigService->get('EriveDelivery.config.deliveryMethods') ?? [])) {
+                $id = $event->getOrderId();
+                $this->logger->notice('ERIVE.delivery: Processing order # ' . $id);
+                $this->orderService->processOrderById($id);
+                break;
+            }
+        }
     }
 }
