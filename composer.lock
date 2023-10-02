@@ -4,20 +4,20 @@
     "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
     "This file is @generated automatically"
   ],
-  "content-hash": "f2aa11794fa4b8875ed36e5f626dde7c",
+  "content-hash": "aa7d671f2d70e893c8921f62abcfb7c8",
   "packages": [
     {
       "name": "eriveeu/delivery-api-client",
-      "version": "v0.1.0",
+      "version": "v0.1.1",
       "source": {
         "type": "git",
-        "url": "git@github.com:eriveeu/delivery-api-client-php.git",
-        "reference": "be80db93ed38927e00d8835c932a6b82befa4843"
+        "url": "https://github.com/eriveeu/delivery-api-client-php.git",
+        "reference": "ce9182d561c1cf918d479f68f4c958626d6e3c01"
       },
       "dist": {
         "type": "zip",
-        "url": "https://api.github.com/repos/eriveeu/delivery-api-client-php/zipball/be80db93ed38927e00d8835c932a6b82befa4843",
-        "reference": "be80db93ed38927e00d8835c932a6b82befa4843",
+        "url": "https://api.github.com/repos/eriveeu/delivery-api-client-php/zipball/ce9182d561c1cf918d479f68f4c958626d6e3c01",
+        "reference": "ce9182d561c1cf918d479f68f4c958626d6e3c01",
         "shasum": ""
       },
       "require": {
@@ -43,7 +43,9 @@
           "Erive\\Delivery\\Test\\": "test/"
         }
       },
-      "license": ["unlicense"],
+      "license": [
+        "unlicense"
+      ],
       "authors": [
         {
           "name": "ERIVE GmbH",
@@ -52,12 +54,20 @@
       ],
       "description": "ERIVE.delivery (formerly GREEN TO HOME) API",
       "homepage": "https://openapi-generator.tech",
-      "keywords": ["api", "openapi", "openapi-generator", "openapitools", "php", "rest", "sdk"],
+      "keywords": [
+        "api",
+        "openapi",
+        "openapi-generator",
+        "openapitools",
+        "php",
+        "rest",
+        "sdk"
+      ],
       "support": {
-        "source": "https://github.com/eriveeu/delivery-api-client-php/tree/v0.1.0",
+        "source": "https://github.com/eriveeu/delivery-api-client-php/tree/v0.1.1",
         "issues": "https://github.com/eriveeu/delivery-api-client-php/issues"
       },
-      "time": "2023-06-05T11:16:55+00:00"
+      "time": "2023-09-21T08:15:40+00:00"
     },
     {
       "name": "guzzlehttp/guzzle",
@@ -105,13 +115,17 @@
         }
       },
       "autoload": {
-        "files": ["src/functions_include.php"],
+        "files": [
+          "src/functions_include.php"
+        ],
         "psr-4": {
           "GuzzleHttp\\": "src/"
         }
       },
       "notification-url": "https://packagist.org/downloads/",
-      "license": ["MIT"],
+      "license": [
+        "MIT"
+      ],
       "authors": [
         {
           "name": "Graham Campbell",
@@ -150,7 +164,17 @@
         }
       ],
       "description": "Guzzle is a PHP HTTP client library",
-      "keywords": ["client", "curl", "framework", "http", "http client", "psr-18", "psr-7", "rest", "web service"],
+      "keywords": [
+        "client",
+        "curl",
+        "framework",
+        "http",
+        "http client",
+        "psr-18",
+        "psr-7",
+        "rest",
+        "web service"
+      ],
       "support": {
         "issues": "https://github.com/guzzle/guzzle/issues",
         "source": "https://github.com/guzzle/guzzle/tree/7.7.0"
@@ -205,7 +229,9 @@
         }
       },
       "notification-url": "https://packagist.org/downloads/",
-      "license": ["MIT"],
+      "license": [
+        "MIT"
+      ],
       "authors": [
         {
           "name": "Graham Campbell",
@@ -229,7 +255,9 @@
         }
       ],
       "description": "Guzzle promises library",
-      "keywords": ["promise"],
+      "keywords": [
+        "promise"
+      ],
       "support": {
         "issues": "https://github.com/guzzle/promises/issues",
         "source": "https://github.com/guzzle/promises/tree/2.0.0"
@@ -295,7 +323,9 @@
         }
       },
       "notification-url": "https://packagist.org/downloads/",
-      "license": ["MIT"],
+      "license": [
+        "MIT"
+      ],
       "authors": [
         {
           "name": "Graham Campbell",
@@ -334,7 +364,16 @@
         }
       ],
       "description": "PSR-7 message implementation that also provides common utility methods",
-      "keywords": ["http", "message", "psr-7", "request", "response", "stream", "uri", "url"],
+      "keywords": [
+        "http",
+        "message",
+        "psr-7",
+        "request",
+        "response",
+        "stream",
+        "uri",
+        "url"
+      ],
       "support": {
         "issues": "https://github.com/guzzle/psr7/issues",
         "source": "https://github.com/guzzle/psr7/tree/2.5.0"
@@ -385,7 +424,9 @@
         }
       },
       "notification-url": "https://packagist.org/downloads/",
-      "license": ["MIT"],
+      "license": [
+        "MIT"
+      ],
       "authors": [
         {
           "name": "PHP-FIG",
@@ -394,7 +435,12 @@
       ],
       "description": "Common interface for HTTP clients",
       "homepage": "https://github.com/php-fig/http-client",
-      "keywords": ["http", "http-client", "psr", "psr-18"],
+      "keywords": [
+        "http",
+        "http-client",
+        "psr",
+        "psr-18"
+      ],
       "support": {
         "source": "https://github.com/php-fig/http-client/tree/1.0.2"
       },
@@ -430,7 +476,9 @@
         }
       },
       "notification-url": "https://packagist.org/downloads/",
-      "license": ["MIT"],
+      "license": [
+        "MIT"
+      ],
       "authors": [
         {
           "name": "PHP-FIG",
@@ -438,7 +486,16 @@
         }
       ],
       "description": "Common interfaces for PSR-7 HTTP message factories",
-      "keywords": ["factory", "http", "message", "psr", "psr-17", "psr-7", "request", "response"],
+      "keywords": [
+        "factory",
+        "http",
+        "message",
+        "psr",
+        "psr-17",
+        "psr-7",
+        "request",
+        "response"
+      ],
       "support": {
         "source": "https://github.com/php-fig/http-factory/tree/1.0.2"
       },
@@ -473,7 +530,9 @@
         }
       },
       "notification-url": "https://packagist.org/downloads/",
-      "license": ["MIT"],
+      "license": [
+        "MIT"
+      ],
       "authors": [
         {
           "name": "PHP-FIG",
@@ -482,7 +541,14 @@
       ],
       "description": "Common interface for HTTP messages",
       "homepage": "https://github.com/php-fig/http-message",
-      "keywords": ["http", "http-message", "psr", "psr-7", "request", "response"],
+      "keywords": [
+        "http",
+        "http-message",
+        "psr",
+        "psr-7",
+        "request",
+        "response"
+      ],
       "support": {
         "source": "https://github.com/php-fig/http-message/tree/2.0"
       },
@@ -511,10 +577,14 @@
       },
       "type": "library",
       "autoload": {
-        "files": ["src/getallheaders.php"]
+        "files": [
+          "src/getallheaders.php"
+        ]
       },
       "notification-url": "https://packagist.org/downloads/",
-      "license": ["MIT"],
+      "license": [
+        "MIT"
+      ],
       "authors": [
         {
           "name": "Ralph Khattar",
@@ -556,10 +626,14 @@
         }
       },
       "autoload": {
-        "files": ["function.php"]
+        "files": [
+          "function.php"
+        ]
       },
       "notification-url": "https://packagist.org/downloads/",
-      "license": ["MIT"],
+      "license": [
+        "MIT"
+      ],
       "authors": [
         {
           "name": "Nicolas Grekas",
@@ -602,5 +676,5 @@
     "php": "^7.4 || ^8.0"
   },
   "platform-dev": [],
-  "plugin-api-version": "2.3.0"
+  "plugin-api-version": "2.6.0"
 }

@@ -10,7 +10,7 @@ use Erive\Delivery\Model\Address;
 use Erive\Delivery\Model\Customer;
 use Erive\Delivery\Model\Parcel;
 use GuzzleHttp\Client;
-use Shopware\Core\Checkout\Order\OrderEntity;
+use Psr\Log\LoggerInterface;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
@@ -38,12 +38,15 @@ class OrderService
 
     public function __construct(
         SystemConfigService $systemConfigService,
-        EntityRepository $orderRepository,
-        EntityRepository $orderDeliveryRepository
-    ) {
+        EntityRepository    $orderRepository,
+        EntityRepository    $orderDeliveryRepository,
+        LoggerInterface     $logger
+    )
+    {
         $this->systemConfigService = $systemConfigService;
         $this->orderRepository = $orderRepository;
         $this->orderDeliveryRepository = $orderDeliveryRepository;
+        $this->logger = $logger;
 
         $this->allowedDeliveryMethodIds = $systemConfigService->get('EriveDelivery.config.deliveryMethods') ?? [];
         $this->eriveEnv = $systemConfigService->get('EriveDelivery.config.eriveEnvironment');
@@ -55,7 +58,7 @@ class OrderService
         $this->context = Context::createDefaultContext();
 
         if (empty($this->apiKey)) {
-            dd('Api key not set in configuration. Exiting');
+            $this->logger->critical('API key not set in configuration.');
         }
     }
 
@@ -94,8 +97,7 @@ class OrderService
         try {
             $results = $this->orderRepository->search($criteria, $this->context);
         } catch (Exception $e) {
-            dump('Exception when searching for unsynchronized orders: ');
-            dump($e->getMessage());
+            $this->logger->critical('Exception when searching for unsynchronized orders: ', $e->getMessage());
         }
 
         return $results;
@@ -104,7 +106,7 @@ class OrderService
     protected function needsLabel($item): bool
     {
         if (
-            $item->getType() !== 'product' || 
+            $item->getType() !== 'product' ||
             !empty($item->getParentId())
         ) {
             return false;
@@ -144,14 +146,14 @@ class OrderService
             }
         }
 
-        // Overwrite weight untill API allows heavy parcels
+        // Overwrite weight until API allows heavy parcels
         $parcelWeight = 0;
 
         // Configuring Parcel
         $parcel = new Parcel(); // \Erive\Delivery\Api\Model\Parcel | Parcel to submit
         $parcel->setExternalReference($order->getOrderNumber());
         // Sets the comment to parcel volume if there is no comment defined
-        $parcel->setComment($order->getCustomerComment() ?: 'Package volume: ' . $parcelVolume . 'm^3');
+        $parcel->setComment($order->getCustomerComment() ?: "");
         $parcel->setWeight($parcelWeight);
         $parcel->setWidth($parcelWidth);
         $parcel->setLength($parcelLength);
@@ -180,16 +182,16 @@ class OrderService
 
     protected function publishParcelToEriveDelivery(Parcel $parcel)
     {
-        if ($this->eriveEnv == "www"){
+        if ($this->eriveEnv == "www") {
             $config = Configuration::getDefaultConfiguration()->setApiKey('key', $this->apiKey);
         } else {
             $config = Configuration::getDefaultConfiguration()->setApiKey('key', $this->apiTestKey);
         }
 
-        if ($this->eriveEnv == "custom"){
+        if ($this->eriveEnv == "custom") {
             $config->setHost($this->customApiEndpoint);
         } else {
-            $config->setHost("https://" . $this->eriveEnv .".greentohome.at/api/v1");
+            $config->setHost("https://" . $this->eriveEnv . ".greentohome.at/api/v1");
         }
 
         try {
@@ -197,7 +199,8 @@ class OrderService
             $apiInstance = new CompanyApi(new Client, $config);
             return $apiInstance->submitParcel($parcel);
         } catch (Exception $e) {
-            dump('Exception when processing order number :' . $parcel->getExternalReference() . PHP_EOL . $e->getMessage() . PHP_EOL);
+
+            $this->logger->critical(sprintf("Exception when processing order number :%s %s", $parcel->getExternalReference(), $e->getMessage()));
         }
 
         return;
@@ -207,31 +210,29 @@ class OrderService
     {
         $preparedParcel = $this->populateEriveDeliveryParcel($order);
         $pubParcel = $this->publishParcelToEriveDelivery($preparedParcel);
-        if ($pubParcel === null || !$pubParcel['success']) { 
-            dump('Parcel not returned from API');
+        if ($pubParcel === null || !$pubParcel['success']) {
+            $this->logger->info("Parcel not returned from API");
             return;
         }
 
         $eriveParcelId = $pubParcel->getParcel()->getId();
         $eriveStickerUrl = $pubParcel->getParcel()->getLabelUrl();
 
-        // Set custom fields to ERIVE.delivery Parcel ID and Sticker URL
+        // Set custom fields to ERIVE.delivery Parcel ID and Shipping Label URL
         $customFields = $order->getCustomFields();
         $customFields[$this->customParcelIdField] = $eriveParcelId;
         $customFields[$this->customStickerUrlField] = $eriveStickerUrl;
         $this->orderRepository->update([['id' => $order->getId(), 'customFields' => $customFields]], $this->context);
         $this->writeTrackingNumber($order->getId(), $eriveParcelId);
 
-        // TODO : set order status to "In Progress"
-
-        dump('Order #' . $order->getOrderNumber() . ' -> Erive-Paketnummer: ' . $eriveParcelId . PHP_EOL);
+        $this->logger->info('Order #' . $order->getOrderNumber() . ' -> ERIVE.delivery parcel number: ' . $eriveParcelId);
     }
 
     protected function processOrder($order): void
     {
         $customFields = $order->getCustomFields();
         if (is_array($customFields) && array_key_exists('isReturnOrder', $customFields) && $customFields['isReturnOrder']) {
-            dump('Order #' . $order->getOrderNumber() . ' skipped (return order)' . PHP_EOL);
+            $this->logger->info('Order #' . $order->getOrderNumber() . ' skipped (return order)');
             return;
         }
 
@@ -242,7 +243,7 @@ class OrderService
             }
         }
 
-        dump(`Order #{$order->getOrderNumber()} skipped (wrong shipping method)` . PHP_EOL);
+        $this->logger->info(`Order #{$order->getOrderNumber()} skipped (as shipping method is not whitelisted)`);
         return;
 
     }
@@ -252,11 +253,9 @@ class OrderService
         $orders = $this->getUnsubmittedOrders();
 
         if (count($orders) === 0) {
-            dump('No new unhandled orders found' . PHP_EOL);
+            $this->logger->debug('No new unhandled orders found');
             return;
         }
-
-        dump('Following orders are being processed:' . PHP_EOL);
 
         foreach ($orders as $order) {
             $this->processOrder($order);
@@ -287,12 +286,11 @@ class OrderService
         try {
             $order = $this->orderRepository->search($criteria, $this->context)->getEntities()->first();
         } catch (Exception $e) {
-            dump('Exception when searching for unsyncronized orders: ');
-            dump($e->getMessage());
+            $this->logger->critical($e->getMessage());
         }
 
         if (is_null($order)) {
-            dump('No orders found with id ' . $id . ', or order does not satisfy requirements');
+            $this->logger->info('No orders found with id ' . $id . ', or order does not satisfy requirements');
             return;
         }
 
