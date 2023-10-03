@@ -9,8 +9,8 @@
     }
   ],
   "require": {
-    "php": "^7.4 || ^8.0",
-    "shopware/core": "~6.4.0",
+    "php": ">= 7.4",
+    "shopware/core": "~6.4.0 || ~6.5.0",
     "eriveeu/delivery-api-client": "^0.1"
   },
   "repositories": [
@@ -37,12 +37,12 @@
       "en-GB": "ERIVE.delivery is the easiest way to integrate (emission-free) parcel logistics into your shop. ERIVE takes care of the most CO₂-intensive last and/or first mile."
     },
     "manufacturerLink": {
-      "de-DE": "https://greentohome.at",
-      "en-GB": "https://greentohome.at"
+      "de-DE": "https://erive.delivery",
+      "en-GB": "https://erive.delivery"
     },
     "supportLink": {
-      "de-DE": "https://greentohome.at/kontakt",
-      "en-GB": "https://greentohome.at/kontakt"
+      "de-DE": "https://erive.delivery/kontakt",
+      "en-GB": "https://erive.delivery/kontakt"
     }
   }
 }

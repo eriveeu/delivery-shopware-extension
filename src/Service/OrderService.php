@@ -4,6 +4,7 @@ namespace Erive\Delivery\Service;
 
 use Doctrine\DBAL\Driver\PDO\Exception;
 use Erive\Delivery\Api\CompanyApi;
+use Erive\Delivery\ApiException;
 use Erive\Delivery\Configuration;
 use Erive\Delivery\EriveDelivery;
 use Erive\Delivery\Model\Address;
@@ -16,10 +17,8 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\AndFilter;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\ContainsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\OrFilter;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 
 class OrderService
@@ -182,28 +181,30 @@ class OrderService
 
     protected function publishParcelToEriveDelivery(Parcel $parcel)
     {
-        if ($this->eriveEnv == "www") {
-            $config = Configuration::getDefaultConfiguration()->setApiKey('key', $this->apiKey);
-        } else {
-            $config = Configuration::getDefaultConfiguration()->setApiKey('key', $this->apiTestKey);
-        }
+        $config = Configuration::getDefaultConfiguration();
 
-        if ($this->eriveEnv == "custom") {
-            $config->setHost($this->customApiEndpoint);
-        } else {
-            $config->setHost("https://" . $this->eriveEnv . ".greentohome.at/api/v1");
+        switch ($this->eriveEnv) {
+            case "www":
+                $config->setHost("https://" . $this->eriveEnv . ".erive.delivery/api/v1");
+                $config->setApiKey('key', $this->apiKey);
+                break;
+            case "custom":
+                $config->setHost($this->customApiEndpoint);
+                $config->setApiKey('key', $this->apiTestKey);
+                break;
+            default:
+                $config->setHost("https://" . $this->eriveEnv . ".greentohome.at/api/v1");
+                $config->setApiKey('key', $this->apiTestKey);
+                break;
         }
 
         try {
             // Save parcel to ERIVE.delivery and retrieve assigned ID and Label URL
             $apiInstance = new CompanyApi(new Client, $config);
             return $apiInstance->submitParcel($parcel);
-        } catch (Exception $e) {
-
+        } catch (ApiException $e) {
             $this->logger->critical(sprintf("Exception when processing order number :%s %s", $parcel->getExternalReference(), $e->getMessage()));
         }
-
-        return;
     }
 
     protected function populateParcelData($order)
@@ -244,8 +245,6 @@ class OrderService
         }
 
         $this->logger->info(`Order #{$order->getOrderNumber()} skipped (as shipping method is not whitelisted)`);
-        return;
-
     }
 
     public function processAllOrders(): void
@@ -282,12 +281,7 @@ class OrderService
             'transactions.stateMachineState.technicalName',
         ]);
 
-        $order = null;
-        try {
-            $order = $this->orderRepository->search($criteria, $this->context)->getEntities()->first();
-        } catch (Exception $e) {
-            $this->logger->critical($e->getMessage());
-        }
+        $order = $this->orderRepository->search($criteria, $this->context)->getEntities()->first();
 
         if (is_null($order)) {
             $this->logger->info('No orders found with id ' . $id . ', or order does not satisfy requirements');
