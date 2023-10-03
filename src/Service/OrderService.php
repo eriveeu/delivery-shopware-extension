@@ -52,8 +52,8 @@ class OrderService
         $this->apiKey = $systemConfigService->get('EriveDelivery.config.apiKey') ?? '';
         $this->apiTestKey = $systemConfigService->get('EriveDelivery.config.apiTestKey') ?? '';
         $this->customApiEndpoint = $systemConfigService->get('EriveDelivery.config.customApiEndpoint') ?? '';
-        $this->customParcelIdField = EriveDelivery::FIELD_PARCEL_ID;
-        $this->customStickerUrlField = EriveDelivery::FIELD_STICKER_URL;
+        $this->customParcelIdField = EriveDelivery::CUSTOM_FIELD_PARCEL_NUMBER;
+        $this->customStickerUrlField = EriveDelivery::CUSTOM_FIELD_PARCEL_LABEL_URL;
         $this->context = Context::createDefaultContext();
 
         if (empty($this->apiKey)) {
