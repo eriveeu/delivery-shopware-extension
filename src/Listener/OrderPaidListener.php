@@ -28,8 +28,9 @@ class OrderPaidListener
     {
         foreach($event->getOrder()->getDeliveries()->getShippingMethodIds() as $orderShippingMethodId) {
             if (in_array($orderShippingMethodId, $this->systemConfigService->get('EriveDelivery.config.deliveryMethods') ?? [])) {
-                $id = $event->getOrderId();
-                $this->logger->notice('ERIVE.delivery: Processing order # ' . $id);
+                $orderId = $event->getOrderId();
+                $orderNumber = $event->getOrder()->getOrderNumber();
+                $this->logger->notice('ERIVE.delivery: Processing order # ' . $orderNumber . ' (ID: '. $orderId . ')');
                 $this->orderService->processOrderById($id);
                 break;
             }
