@@ -10,7 +10,7 @@ class OrderSubmissionTaskHandler extends ScheduledTaskHandler
 {
     protected LoggerInterface $logger;
     protected OrderService $orderService;
-    
+
     public function __construct(
         EntityRepository $scheduledTaskRepository,
         LoggerInterface $logger,
