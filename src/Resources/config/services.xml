@@ -12,11 +12,11 @@
             <tag name="console.command" />
         </service>
 
-        <service id="Erive\Delivery\Listener\OrderPaidListener" >
-            <argument type="service" id="logger" />
+        <service id="Erive\Delivery\Listener\OrderListener" >
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService" />   
             <argument type="service" id="Erive\Delivery\Service\OrderService" />   
-            <tag name="kernel.event_listener" event="state_enter.order_transaction.state.paid" method="onOrderTransactionState" />
+            <tag name="kernel.event_listener" event="state_enter.order_transaction.state.paid" method="onOrderChangeState" />
+            <tag name="kernel.event_listener" event="state_enter.order_delivery.state.shipped" method="onOrderChangeState" />
         </service>
 
         <service id="Erive\Delivery\ScheduledTask\OrderSubmission\OrderSubmissionTask">
@@ -36,18 +36,5 @@
             <argument type="service" id="order.repository" />
             <argument type="service" id="order_delivery.repository" />
         </service>
-
-        <!-- <service id="Erive\Delivery\ScheduledTask\ParcelDelivered\ParcelDeliveredTask">
-            <tag name="shopware.scheduled.task" />
-        </service>
-
-        <service id="Erive\Delivery\ScheduledTask\ParcelDelivered\ParcelDeliveredTaskHandler">
-            <tag name="messenger.message_handler" />
-            <argument type="service" id="scheduled_task.repository"/>
-            <argument type="service" id="logger" />
-            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService" />
-            <argument type="service" id="order.repository" />
-            <argument type="service" id="order_delivery.repository" />
-        </service> -->
     </services>
 </container>

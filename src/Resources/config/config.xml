@@ -4,18 +4,28 @@
 
     <card>
         <title>Basic Configuration</title>
-        <title lang="de-DE">Grundeinstellungen</title>
+        <title lang="de-DE">Basiseinstellung</title>
+        <component name="sw-entity-multi-id-select">
+            <name>deliveryMethods</name>
+            <label>Whitelisted delivery methods for ERIVE.delivery</label>
+            <label lang="de-DE">Aufgeführte Versandmethoden für ERIVE.delivery</label>
+            <helpText>Orders placed with selected delivery methods will be submitted to the ERIVE.delivery platform</helpText>
+            <helpText lang="de-DE">Bestellungen, die mit ausgewählten Liefermethoden aufgegeben werden, werden an die ERIVE.delivery-Plattformen übermittelt</helpText>
+            <entity>shipping_method</entity>
+        </component>
 
-<!--        <input-field>-->
-<!--            <name>email</name>-->
-<!--            <copyable>true</copyable>-->
-<!--            <label>eMail address</label>-->
-<!--            <label lang="de-DE">E-Mail Adresse</label>-->
-<!--            <placeholder>you@example.com</placeholder>-->
-<!--            <placeholder lang="de-DE">du@beispiel.de</placeholder>-->
-<!--            <helpText>Please fill in your personal eMail address</helpText>-->
-<!--            <helpText lang="de-DE">Bitte trage deine persönliche E-Mail Adresse ein</helpText>-->
-<!--        </input-field>-->
+        <input-field type="bool">
+            <name>deliveryAnnouncedStatus</name>
+            <label>Announce parcel after order has been Shipped</label>
+            <label lang="de-DE">Kündigen Sie das Paket an, nachdem die Bestellung versandt wurde</label>
+            <helpText>Change parcel state to "Announced" after order state changed to "Shipped"</helpText>
+            <helpText lang="de-DE">Ändern Sie den Paketstatus in „Angekündigt“, nachdem sich der Bestellstatus in „Versendet“ geändert hat.</helpText>
+            <defaultValue>False</defaultValue>
+        </input-field>
+    </card>
+    <card>
+        <title>Environment configuration</title>
+        <title lang="de-DE">Umgebungskonfiguration</title>
         <input-field type="single-select">
             <name>eriveEnvironment</name>
             <options>
@@ -57,11 +67,5 @@
             <label lang="de-DE">API Key</label>
             <helpText>Company API Key for PROD</helpText>
         </input-field>
-        <component name="sw-entity-multi-id-select">
-            <name>deliveryMethods</name>
-            <label>Whitelisted delivery methods for ERIVE.delivery</label>
-            <helpText>Orders placed with selected delivery methods will be submitted to the ERIVE.delivery platform</helpText>
-            <entity>shipping_method</entity>
-        </component>
     </card>
 </config>
