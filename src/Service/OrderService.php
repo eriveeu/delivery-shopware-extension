@@ -98,6 +98,18 @@ class OrderService
         $this->orderDeliveryRepository->update([['id' => $delivery->first()->getId(), 'trackingCodes' => $trackingCodes]], $this->context);
     }
 
+    protected function removeTrackingNumber($orderId, $trackingCode)
+    {
+        $criteria = new Criteria();
+        $criteria->addFilter(new EqualsFilter('id', $orderId));
+        $criteria->addAssociation('deliveries');
+        $delivery = $this->orderRepository->search($criteria, $this->context)->getEntities()->first()->getDeliveries();
+
+        $trackingCodes = count($delivery) > 0 ? $delivery->first()->getTrackingCodes() : [];
+        unset($trackingCodes[$trackingCode]);
+        $this->orderDeliveryRepository->update([['id' => $delivery->first()->getId(), 'trackingCodes' => $trackingCodes]], $this->context);
+    }
+
     protected function getCriteriaFilter($args = [])
     {
         return new AndFilter(array_merge([
@@ -239,7 +251,18 @@ class OrderService
         try {
             $pubParcel = $parcelId ? ($this->companyApi->getParcelById($parcelId) ?? null) : null;
         } catch(ApiException $e) {
-            $pubParcel = null;
+            switch ($e->getCode()) {
+                case '404':
+                    $this->logger->error('ERIVE.Delivery: Parcel ' . $parcelId . ' does not exist');
+                    $this->removeTrackingNumber($order->getId(), $parcelId);
+                    // no break
+                case '500':
+                    $this->logger->critical('ERIVE.Delivery: API Error! ' . $e->getMessage());
+                    // no break
+                default:
+                    $pubParcel = null;
+                    break;
+            }
         }
 
         if (!$pubParcel) {
