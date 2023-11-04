@@ -86,6 +86,33 @@ class OrderService
         $this->companyApi = new CompanyApi(new Client(), $this->config);
     }
 
+    public function processAllOrders(): void
+    {
+        $orders = $this->getUnsubmittedOrders();
+
+        if (count($orders) === 0) {
+            $this->logger->debug('ERIVE.Delivery: No new unhandled orders found');
+            return;
+        }
+
+        foreach ($orders as $order) {
+            $this->processOrder($order);
+        }
+    }
+
+    public function processOrderById(string $orderId): void
+    {
+        $order = $this->getOrderById($orderId);
+
+        if (is_null($order)) {
+            return;
+        }
+
+        $orderNumber = $order->getOrderNumber();
+        $this->logger->info('ERIVE.Delivery: Processing order # ' . $orderNumber . ' (ID: ' . $orderId . ')');
+        $this->processOrder($order);
+    }
+
     protected function writeTrackingNumber($orderId, $trackingCode)
     {
         $criteria = new Criteria();
@@ -106,8 +133,35 @@ class OrderService
         $delivery = $this->orderRepository->search($criteria, $this->context)->getEntities()->first()->getDeliveries();
 
         $trackingCodes = count($delivery) > 0 ? $delivery->first()->getTrackingCodes() : [];
-        unset($trackingCodes[$trackingCode]);
-        $this->orderDeliveryRepository->update([['id' => $delivery->first()->getId(), 'trackingCodes' => $trackingCodes]], $this->context);
+
+        $this->orderDeliveryRepository->update(
+            [[
+                'id' => $delivery->first()->getId(),
+                'trackingCodes' => array_filter($trackingCodes, fn($tc) => $tc !== $trackingCode)
+            ]],
+            $this->context
+        );
+    }
+
+    protected function getCustomField($order, $fieldName, $default = null)
+    {
+        $customFields = $order->getCustomFields();
+        if (is_array($customFields) and array_key_exists($fieldName, $customFields)) {
+            return $customFields[$fieldName];
+        }
+        return $default;
+    }
+
+    protected function needsLabel($item): bool
+    {
+        if (
+            $item->getType() !== 'product' ||
+            !empty($item->getParentId())
+        ) {
+            return false;
+        }
+
+        return true;
     }
 
     protected function getCriteriaFilter($args = [])
@@ -150,16 +204,23 @@ class OrderService
         return $results;
     }
 
-    protected function needsLabel($item): bool
+    protected function announceParcel($parcelId)
     {
-        if (
-            $item->getType() !== 'product' ||
-            !empty($item->getParentId())
-        ) {
-            return false;
+        try {
+            $this->companyApi->updateParcelById($parcelId, ["status" => Parcel::STATUS_ANNOUNCED]);
+            $this->logger->info("ERIVE.Delivery: parcel number " . $parcelId . " changed status to '" . Parcel::STATUS_ANNOUNCED . "'");
+        } catch (ApiException $e) {
+            $this->logger->critical("ERIVE.Delivery: Unable to change parcel status to '" . Parcel::STATUS_ANNOUNCED . "' : " . $e->getMessage());
         }
+    }
 
-        return true;
+    protected function getOrderById(string $orderId)
+    {
+        $criteria = new Criteria();
+        $criteria->addFilter($this->getCriteriaFilter([new EqualsFilter('id', $orderId)]));
+        $criteria->addAssociations($this->getCriteriaAssociations());
+
+        return $this->orderRepository->search($criteria, $this->context)->getEntities()->first();
     }
 
     protected function populateEriveDeliveryParcel($order): Parcel
@@ -236,22 +297,13 @@ class OrderService
         }
     }
 
-    protected function getCustomField($order, $fieldName, $default = null)
-    {
-        $customFields = $order->getCustomFields();
-        if (is_array($customFields) and array_key_exists($fieldName, $customFields)) {
-            return $customFields[$fieldName];
-        }
-        return $default;
-    }
-
     protected function processOrderWithParcelData($order)
     {
         $parcelId = $this->getCustomField($order, $this->customParcelIdField, false);
         try {
             $pubParcel = $parcelId ? ($this->companyApi->getParcelById($parcelId) ?? null) : null;
         } catch(ApiException $e) {
-            switch ($e->getCode()) {
+            switch (intval($e->getCode())) {
                 case 404:
                     $this->logger->error('ERIVE.Delivery: Parcel ' . $parcelId . ' does not exist');
                     $this->removeTrackingNumber($order->getId(), $parcelId);
@@ -261,11 +313,11 @@ class OrderService
                 case 403:
                 case 500:
                     $this->logger->critical('ERIVE.Delivery: API Error! ' . $e->getMessage());
-                    // no break
+                    return;
                 default:
-                    $pubParcel = null;
                     break;
             }
+            $pubParcel = null;
         }
 
         if (!$pubParcel) {
@@ -292,7 +344,11 @@ class OrderService
             $this->logger->info('ERIVE.Delivery: Order #' . $order->getOrderNumber() . ' -> parcel number: ' . $parcelId);
         }
 
-        if ($this->announceOnShip && $order->getDeliveries()->first()->getStateMachineState()->getTechnicalName() === 'shipped') {
+        if (
+            ($pubParcel->getStatus() === Parcel::STATUS_PREPARED_BY_SENDER) &&
+            $this->announceOnShip &&
+            ($order->getDeliveries()->first()->getStateMachineState()->getTechnicalName() === 'shipped')
+        ) {
             $this->announceParcel($parcelId);
         }
     }
@@ -314,49 +370,4 @@ class OrderService
         $this->logger->info(`ERIVE.Delivery: Order #{$order->getOrderNumber()} skipped as shipping method is not whitelisted`);
     }
 
-    protected function announceParcel($parcelId)
-    {
-        try {
-            $this->companyApi->updateParcelById($parcelId, ["status" => Parcel::STATUS_ANNOUNCED]);
-            $this->logger->info("ERIVE.Delivery: parcel number " . $parcelId . " changed status to '" . Parcel::STATUS_ANNOUNCED . "'");
-        } catch (ApiException $e) {
-            $this->logger->critical("ERIVE.Delivery: Unable to change parcel status to '" . Parcel::STATUS_ANNOUNCED . "' : " . $e->getMessage());
-        }
-    }
-
-    public function processAllOrders(): void
-    {
-        $orders = $this->getUnsubmittedOrders();
-
-        if (count($orders) === 0) {
-            $this->logger->debug('ERIVE.Delivery: No new unhandled orders found');
-            return;
-        }
-
-        foreach ($orders as $order) {
-            $this->processOrder($order);
-        }
-    }
-
-    protected function getOrderById(string $orderId)
-    {
-        $criteria = new Criteria();
-        $criteria->addFilter($this->getCriteriaFilter([new EqualsFilter('id', $orderId)]));
-        $criteria->addAssociations($this->getCriteriaAssociations());
-
-        return $this->orderRepository->search($criteria, $this->context)->getEntities()->first();
-    }
-
-    public function processOrderById(string $orderId): void
-    {
-        $order = $this->getOrderById($orderId);
-
-        if (is_null($order)) {
-            return;
-        }
-
-        $orderNumber = $order->getOrderNumber();
-        $this->logger->info('ERIVE.Delivery: Processing order # ' . $orderNumber . ' (ID: ' . $orderId . ')');
-        $this->processOrder($order);
-    }
 }
