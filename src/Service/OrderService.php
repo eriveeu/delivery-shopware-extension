@@ -240,9 +240,6 @@ class OrderService
             $pubParcel = $parcelId ? ($this->companyApi->getParcelById($parcelId) ?? null) : null;
         } catch(ApiException $e) {
             $pubParcel = null;
-            $customFields = $order->getCustomFields() ?? [];
-            $customFields[$this->customParcelIdField] = null;
-            $customFields[$this->customStickerUrlField] = null;
         }
 
         if (!$pubParcel) {
