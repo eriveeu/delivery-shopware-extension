@@ -252,11 +252,14 @@ class OrderService
             $pubParcel = $parcelId ? ($this->companyApi->getParcelById($parcelId) ?? null) : null;
         } catch(ApiException $e) {
             switch ($e->getCode()) {
-                case '404':
+                case 404:
                     $this->logger->error('ERIVE.Delivery: Parcel ' . $parcelId . ' does not exist');
                     $this->removeTrackingNumber($order->getId(), $parcelId);
                     // no break
-                case '500':
+                case 400:
+                case 401:
+                case 403:
+                case 500:
                     $this->logger->critical('ERIVE.Delivery: API Error! ' . $e->getMessage());
                     // no break
                 default:
