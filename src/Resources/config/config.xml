@@ -15,7 +15,7 @@
         </component>
 
         <input-field type="bool">
-            <name>deliveryAnnouncedStatus</name>
+            <name>announceParcelOnShip</name>
             <label>Announce parcel after order has been Shipped</label>
             <label lang="de-DE">Kündigen Sie das Paket an, nachdem die Bestellung versandt wurde</label>
             <helpText>Change parcel state to "Announced" after order state changed to "Shipped"</helpText>

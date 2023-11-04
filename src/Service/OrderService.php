@@ -38,7 +38,6 @@ class OrderService
     protected EntityRepository $orderRepository;
     protected EntityRepository $orderDeliveryRepository;
     protected Context $context;
-    protected string $customAnnounceOnDelivery;
     protected bool $announceOnShip;
     protected Configuration $config;
     protected CompanyApi $companyApi;
@@ -62,8 +61,7 @@ class OrderService
         $this->customParcelIdField = EriveDelivery::CUSTOM_FIELD_PARCEL_NUMBER;
         $this->customStickerUrlField = EriveDelivery::CUSTOM_FIELD_PARCEL_LABEL_URL;
         $this->context = Context::createDefaultContext();
-        $this->announceOnShip = $systemConfigService->get('EriveDelivery.config.deliveryAnnouncedStatus') ?? false;
-        $this->customAnnounceOnDelivery = EriveDelivery::CUSTOM_FIELD_ANNOUNCE_ON_DELIVERY;
+        $this->announceOnShip = $systemConfigService->get('EriveDelivery.config.announceParcelOnShip') ?? false;
 
         if (empty($this->apiKey)) {
             $this->logger->critical('API key not set in configuration.');
@@ -238,12 +236,9 @@ class OrderService
     protected function processOrderWithParcelData($order)
     {
         $parcelId = $this->getCustomField($order, $this->customParcelIdField, false);
-        $orderPaid = $order->getTransactions()->filterByState('paid')->count() > 0;
-        $orderShipped = $order->getDeliveries()->first()->getStateMachineState()->getTechnicalName() === 'shipped';
-        $parcelCreated = (bool) $parcelId;
-        $pubParcel = null;
+        $pubParcel = $parcelId ? ($this->companyApi->getParcelById($parcelId) ?? null) : null;
 
-        if (!$parcelCreated) {
+        if (!$pubParcel) {
             $preparedParcel = $this->populateEriveDeliveryParcel($order);
             $pubParcel = $this->publishParcelToEriveDelivery($preparedParcel);
 
@@ -253,7 +248,6 @@ class OrderService
             }
 
             $pubParcel = $pubParcel->getParcel();
-
             $parcelId = $pubParcel->getId();
             $eriveStickerUrl = $pubParcel->getLabelUrl();
 
@@ -261,7 +255,6 @@ class OrderService
             $customFields = $order->getCustomFields() ?? [];
             $customFields[$this->customParcelIdField] = $parcelId;
             $customFields[$this->customStickerUrlField] = $eriveStickerUrl;
-            $customFields[$this->customAnnounceOnDelivery] = $this->announceOnShip;
 
             $this->orderRepository->update([['id' => $order->getId(), 'customFields' => $customFields]], $this->context);
             $this->writeTrackingNumber($order->getId(), $parcelId);
@@ -269,15 +262,7 @@ class OrderService
             $this->logger->info('ERIVE.Delivery: Order #' . $order->getOrderNumber() . ' -> parcel number: ' . $parcelId);
         }
 
-        $pubParcel = $pubParcel ?: $this->companyApi->getParcelById($parcelId);
-
-        if ($pubParcel->getStatus() === Parcel::STATUS_ANNOUNCED) {
-            return;
-        }
-
-        $announceOnPaid = $this->getCustomField($order, $this->customAnnounceOnDelivery, $this->announceOnShip);
-
-        if ($orderShipped || ($orderPaid && $announceOnPaid)) {
+        if ($this->announceOnShip && $order->getDeliveries()->first()->getStateMachineState()->getTechnicalName() === 'shipped') {
             $this->announceParcel($parcelId);
         }
     }

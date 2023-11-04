@@ -24,7 +24,6 @@ class EriveDelivery extends Plugin
     public const CUSTOM_FIELD_PARCEL_LABEL_URL = self::CUSTOM_FIELD_SET_PREFIX . "_stickerUrl";
     public const CUSTOM_FIELD_PARCEL_NUMBER_ID = "fa5870c8bd194992b316d2f4be2eb009";
     public const CUSTOM_FIELD_PARCEL_NUMBER = self::CUSTOM_FIELD_SET_PREFIX . "_parcelId";
-    public const CUSTOM_FIELD_ANNOUNCE_ON_DELIVERY = self::CUSTOM_FIELD_SET_PREFIX . "_announceOnDelivery";
 
     public function install(InstallContext $context): void
     {
