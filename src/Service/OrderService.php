@@ -236,7 +236,14 @@ class OrderService
     protected function processOrderWithParcelData($order)
     {
         $parcelId = $this->getCustomField($order, $this->customParcelIdField, false);
-        $pubParcel = $parcelId ? ($this->companyApi->getParcelById($parcelId) ?? null) : null;
+        try {
+            $pubParcel = $parcelId ? ($this->companyApi->getParcelById($parcelId) ?? null) : null;
+        } catch(ApiException $e) {
+            $pubParcel = null;
+            $customFields = $order->getCustomFields() ?? [];
+            $customFields[$this->customParcelIdField] = null;
+            $customFields[$this->customStickerUrlField] = null;
+        }
 
         if (!$pubParcel) {
             $preparedParcel = $this->populateEriveDeliveryParcel($order);
@@ -290,7 +297,7 @@ class OrderService
             $this->companyApi->updateParcelById($parcelId, ["status" => Parcel::STATUS_ANNOUNCED]);
             $this->logger->info("ERIVE.Delivery: parcel number " . $parcelId . " changed status to '" . Parcel::STATUS_ANNOUNCED . "'");
         } catch (ApiException $e) {
-            $this->logger->critical("ERIVE.Delivery: Unable to change parcel status to '" . Parcel::STATUS_ANNOUNCED . "'");
+            $this->logger->critical("ERIVE.Delivery: Unable to change parcel status to '" . Parcel::STATUS_ANNOUNCED . "' : " . $e->getMessage());
         }
     }
 
