@@ -186,7 +186,7 @@ class OrderService
             'deliveries.shippingMethod',
             'deliveries.stateMachineState.technicalName',
             'transactions.stateMachineState.technicalName',
-        ]);
+        ], $args);
     }
 
     protected function getUnsubmittedOrders(): EntitySearchResult
