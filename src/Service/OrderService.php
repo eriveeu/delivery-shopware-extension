@@ -269,6 +269,11 @@ class OrderService
         $parcel->setHeight($parcelHeight);
         $parcel->setPackagingUnits($totalPackagingUnits);
 
+        $orderDeliveryStatus = $order->getDeliveries()->first()->getStateMachineState()->getTechnicalName();
+        if ($this->announceOnShip && ($orderDeliveryStatus === 'shipped')) {
+            $parcel->setStatus(Parcel::STATUS_ANNOUNCED);
+        }
+
         $customer = new Customer(); // \Erive\Delivery\Api\Model\Customer
         $customer->setName($order->getOrderCustomer()->getFirstName() . ' ' . $order->getOrderCustomer()->getLastName());
         $customer->setEmail($order->getOrderCustomer()->getEmail());
@@ -342,16 +347,21 @@ class OrderService
             $this->orderRepository->update([['id' => $order->getId(), 'customFields' => $customFields]], $this->context);
             $this->writeTrackingNumber($order->getId(), $parcelId);
 
-            $this->logger->info('ERIVE.Delivery: Order #' . $order->getOrderNumber() . ' -> parcel number: ' . $parcelId);
+            $msg = 'ERIVE.Delivery: Order #' . $order->getOrderNumber() . ' -> parcel number: ' . $parcelId;
+            if (
+                ($preparedParcel->getStatus() === Parcel::STATUS_ANNOUNCED) &&
+                $this->announceOnShip &&
+                ($order->getDeliveries()->first()->getStateMachineState()->getTechnicalName() === 'shipped')
+            ) {
+                $msg .= ", status set to '" . Parcel::STATUS_ANNOUNCED . "'";
+            }
+            $this->logger->info($msg);
         }
 
-        $parcelStatus = $pubParcel->getStatus();
-        $orderDeliveryStatus = $order->getDeliveries()->first()->getStateMachineState()->getTechnicalName();
-
         if (
-            ($parcelStatus === Parcel::STATUS_PREPARED_BY_SENDER) &&
+            ($pubParcel->getStatus() === Parcel::STATUS_PREPARED_BY_SENDER) &&
             $this->announceOnShip &&
-            ($orderDeliveryStatus === 'shipped')
+            ($orderDeliveryStatus = $order->getDeliveries()->first()->getStateMachineState()->getTechnicalName() === 'shipped')
         ) {
             $this->announceParcel($parcelId);
         }
