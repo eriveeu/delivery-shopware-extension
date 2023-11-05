@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Erive\Delivery\Service;
 
@@ -40,8 +42,7 @@ class OrderService
         EntityRepository    $orderRepository,
         EntityRepository    $orderDeliveryRepository,
         LoggerInterface     $logger
-    )
-    {
+    ) {
         $this->systemConfigService = $systemConfigService;
         $this->orderRepository = $orderRepository;
         $this->orderDeliveryRepository = $orderDeliveryRepository;
@@ -200,7 +201,7 @@ class OrderService
 
         try {
             // Save parcel to ERIVE.delivery and retrieve assigned ID and Label URL
-            $apiInstance = new CompanyApi(new Client, $config);
+            $apiInstance = new CompanyApi(new Client(), $config);
             return $apiInstance->submitParcel($parcel);
         } catch (ApiException $e) {
             $this->logger->critical(sprintf("Exception when processing order number :%s %s", $parcel->getExternalReference(), $e->getMessage()));
