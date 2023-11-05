@@ -65,6 +65,7 @@ class OrderService
 
         if (empty($this->apiKey)) {
             $this->logger->critical('API key not set in configuration.');
+            return;
         }
 
         $config = Configuration::getDefaultConfiguration();
@@ -307,7 +308,7 @@ class OrderService
                 case 404:
                     $this->logger->error('ERIVE.Delivery: Parcel ' . $parcelId . ' does not exist');
                     $this->removeTrackingNumber($order->getId(), $parcelId);
-                    // no break
+                    break;
                 case 400:
                 case 401:
                 case 403:
@@ -344,10 +345,13 @@ class OrderService
             $this->logger->info('ERIVE.Delivery: Order #' . $order->getOrderNumber() . ' -> parcel number: ' . $parcelId);
         }
 
+        $parcelStatus = $pubParcel->getStatus();
+        $orderDeliveryStatus = $order->getDeliveries()->first()->getStateMachineState()->getTechnicalName();
+
         if (
-            ($pubParcel->getStatus() === Parcel::STATUS_PREPARED_BY_SENDER) &&
+            ($parcelStatus === Parcel::STATUS_PREPARED_BY_SENDER) &&
             $this->announceOnShip &&
-            ($order->getDeliveries()->first()->getStateMachineState()->getTechnicalName() === 'shipped')
+            ($orderDeliveryStatus === 'shipped')
         ) {
             $this->announceParcel($parcelId);
         }
@@ -369,5 +373,4 @@ class OrderService
 
         $this->logger->info(`ERIVE.Delivery: Order #{$order->getOrderNumber()} skipped as shipping method is not whitelisted`);
     }
-
 }
