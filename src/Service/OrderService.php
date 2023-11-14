@@ -63,11 +63,6 @@ class OrderService
         $this->context = Context::createDefaultContext();
         $this->announceOnShip = $systemConfigService->get('EriveDelivery.config.announceParcelOnShip') ?? false;
 
-        if (empty($this->apiKey)) {
-            $this->logger->critical('API key not set in configuration.');
-            return;
-        }
-
         $config = Configuration::getDefaultConfiguration();
         switch ($this->eriveEnv) {
             case "www":
@@ -89,6 +84,11 @@ class OrderService
 
     public function processAllOrders(): void
     {
+        if (empty($this->config->getApiKey('key'))) {
+            $this->logger->critical('ERIVE.Delivery: API key not set in configuration.');
+            return;
+        }
+
         $orders = $this->getUnsubmittedOrders();
 
         if (count($orders) === 0) {
@@ -103,6 +103,11 @@ class OrderService
 
     public function processOrderById(string $orderId): void
     {
+        if (empty($this->config->getApiKey('key'))) {
+            $this->logger->critical('ERIVE.Delivery: API key not set in configuration.');
+            return;
+        }
+
         $order = $this->getOrderById($orderId);
 
         if (is_null($order)) {
