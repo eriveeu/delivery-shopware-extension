@@ -32,6 +32,7 @@ class OrderService
     protected string $customStickerUrlField;
     protected string $customApiEndpoint;
     protected array $allowedDeliveryMethodIds;
+    protected bool $countPackagingUnits;
     protected SystemConfigService $systemConfigService;
     protected EntityRepository $orderRepository;
     protected EntityRepository $orderDeliveryRepository;
@@ -53,6 +54,7 @@ class OrderService
         $this->apiKey = $systemConfigService->get('EriveDelivery.config.apiKey') ?? '';
         $this->apiTestKey = $systemConfigService->get('EriveDelivery.config.apiTestKey') ?? '';
         $this->customApiEndpoint = $systemConfigService->get('EriveDelivery.config.customApiEndpoint') ?? '';
+        $this->countPackagingUnits = $systemConfigService->get('EriveDelivery.config.countPackagingUnits') ?? false;
         $this->customParcelIdField = EriveDelivery::CUSTOM_FIELD_PARCEL_NUMBER;
         $this->customStickerUrlField = EriveDelivery::CUSTOM_FIELD_PARCEL_LABEL_URL;
         $this->context = Context::createDefaultContext();
@@ -158,7 +160,7 @@ class OrderService
         $parcel->setWidth($parcelWidth);
         $parcel->setLength($parcelLength);
         $parcel->setHeight($parcelHeight);
-        $parcel->setPackagingUnits($totalPackagingUnits);
+        $parcel->setPackagingUnits($this->countPackagingUnits ? $totalPackagingUnits : 1);
 
         $customer = new Customer(); // \Erive\Delivery\Api\Model\Customer
         $customer->setName($order->getOrderCustomer()->getFirstName() . ' ' . $order->getOrderCustomer()->getLastName());

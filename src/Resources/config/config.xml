@@ -4,6 +4,18 @@
 
     <card>
         <title>Basic Configuration</title>
+        <title lang="de-DE">Basiseinstellung</title>
+
+        <input-field type="bool">
+            <name>countPackagingUnits</name>
+            <label>Each product has its own parcel label</label>
+            <label lang="de-DE">Für jedes Produkt gibt es einen eigenen Paketschein</label>
+            <helpText>Print a parcel label and allocate a packaging unit for each ordered product (as opposed to one parcel label in case the order is packed in one box)</helpText>
+            <helpText lang="de-DE">Drucken Sie einen Paketschein aus und weisen Sie jedem bestellten Produkt eine Verpackungseinheit zu (im Gegensatz zu einem Paketschein, wenn die Bestellung in einem Karton verpackt ist).</helpText>
+        </input-field>
+    </card>
+    <card>
+        <title>Basic Configuration</title>
         <title lang="de-DE">Grundeinstellungen</title>
 
 <!--        <input-field>-->
