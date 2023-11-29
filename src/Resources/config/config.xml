@@ -4,18 +4,28 @@
 
     <card>
         <title>Basic Configuration</title>
-        <title lang="de-DE">Grundeinstellungen</title>
+        <title lang="de-DE">Basiseinstellung</title>
+        <component name="sw-entity-multi-id-select">
+            <name>deliveryMethods</name>
+            <label>Whitelisted delivery methods for ERIVE.delivery</label>
+            <label lang="de-DE">Aufgeführte Versandmethoden für ERIVE.delivery</label>
+            <helpText>Orders placed with selected delivery methods will be submitted to the ERIVE.delivery platform</helpText>
+            <helpText lang="de-DE">Bestellungen, die mit ausgewählten Liefermethoden aufgegeben werden, werden an die ERIVE.delivery-Plattformen übermittelt</helpText>
+            <entity>shipping_method</entity>
+        </component>
 
-<!--        <input-field>-->
-<!--            <name>email</name>-->
-<!--            <copyable>true</copyable>-->
-<!--            <label>eMail address</label>-->
-<!--            <label lang="de-DE">E-Mail Adresse</label>-->
-<!--            <placeholder>you@example.com</placeholder>-->
-<!--            <placeholder lang="de-DE">du@beispiel.de</placeholder>-->
-<!--            <helpText>Please fill in your personal eMail address</helpText>-->
-<!--            <helpText lang="de-DE">Bitte trage deine persönliche E-Mail Adresse ein</helpText>-->
-<!--        </input-field>-->
+        <input-field type="bool">
+            <name>announceParcelOnShip</name>
+            <label>Automatically announce parcel to ERIVE.delivery after delivery status was changed to 'Shipped'</label>
+            <label lang="de-DE">Sendung automatisch bei ERIVE.delivery ankündigen, wenn der Bestellstatus auf "Versandt" gesetzt wurde</label>
+            <helpText>Parcel needs to be ready for pickup. Pickup is scheduled. </helpText>
+            <helpText lang="de-DE">Paket muss fertig zur Abholung verpackt sein. Abholung wird eingeplant.</helpText>
+            <defaultValue>False</defaultValue>
+        </input-field>
+    </card>
+    <card>
+        <title>Environment configuration</title>
+        <title lang="de-DE">Umgebungskonfiguration</title>
         <input-field type="single-select">
             <name>eriveEnvironment</name>
             <options>
@@ -49,19 +59,14 @@
         <input-field type="password">
             <name>apiTestKey</name>
             <label>Test API Key (DEV, STAGE, custom)</label>
+            <label lang="de-DE">API Key Testumgebung</label>
             <helpText>Company API Key for Testing</helpText>
         </input-field>
         <input-field type="password">
             <name>apiKey</name>
             <label>Production API Key</label>
-            <label lang="de-DE">API Key</label>
+            <label lang="de-DE">API Key Produktion</label>
             <helpText>Company API Key for PROD</helpText>
         </input-field>
-        <component name="sw-entity-multi-id-select">
-            <name>deliveryMethods</name>
-            <label>Whitelisted delivery methods for ERIVE.delivery</label>
-            <helpText>Orders placed with selected delivery methods will be submitted to the ERIVE.delivery platform</helpText>
-            <entity>shipping_method</entity>
-        </component>
     </card>
 </config>

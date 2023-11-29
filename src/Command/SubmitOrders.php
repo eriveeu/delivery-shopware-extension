@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Erive\Delivery\Command;
 
@@ -9,7 +11,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class SubmitOrders extends Command
 {
-    const SUCCESS = 0;
+    public const SUCCESS = 0;
     protected OrderService $orderService;
 
     public function __construct(
