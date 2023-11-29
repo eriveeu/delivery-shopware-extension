@@ -291,9 +291,13 @@ class OrderService
         $customerAddress->setCity($shippingAddress->getCity());
         $customerAddress->setZip($shippingAddress->getZipcode());
         $customerAddress->setStreet($shippingAddress->getStreet());
-        $a1 = $shippingAddress->getAdditionalAddressLine1() ?: '';
-        $a2 = $shippingAddress->getAdditionalAddressLine2() ?: '';
-        $customerAddress->setComment(\join(', ', [$a1, $a2])); // Set address comment as a union of additional address lines
+        $customerAddress->setStreetNumber(preg_replace('/^.*?(?=\d)/', '', $shippingAddress->getStreet()));
+        if (!empty($shippingAddress->getAdditionalAddressLine1())) {
+            $customerAddress->setComment((empty($customerAddress->getComment()) ? '' :  $customerAddress->getComment() . ', ') . $shippingAddress->getAdditionalAddressLine1());
+        }
+        if (!empty($shippingAddress->getAdditionalAddressLine2())) {
+            $customerAddress->setComment((empty($customerAddress->getComment()) ? '' :  $customerAddress->getComment() . ', ') . $shippingAddress->getAdditionalAddressLine2());
+        }
 
         $customer->setAddress($customerAddress);
         $parcel->setTo($customer);
