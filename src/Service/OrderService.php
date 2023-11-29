@@ -170,10 +170,13 @@ class OrderService
         $customerAddress->setCity($shippingAddress->getCity());
         $customerAddress->setZip($shippingAddress->getZipcode());
         $customerAddress->setStreet($shippingAddress->getStreet());
-        $street_number = preg_replace('/^.*?(?=\d)/gmi', '', $shippingAddress->getStreet()) ?: null;
-        $a1 = $shippingAddress->getAdditionalAddressLine1() ?: null;
-        $a2 = $shippingAddress->getAdditionalAddressLine2() ?: null;
-        $customerAddress->setComment(implode(', ', [$street_number, $a1, $a2]));
+        $customerAddress->setStreetNumber(preg_replace('/^.*?(?=\d)/', '', $shippingAddress->getStreet()));
+        if (!empty($shippingAddress->getAdditionalAddressLine1())) {
+            $customerAddress->setComment((empty($customerAddress->getComment()) ? '' :  $customerAddress->getComment() . ', ') . $shippingAddress->getAdditionalAddressLine1());
+        }
+        if (!empty($shippingAddress->getAdditionalAddressLine2())) {
+            $customerAddress->setComment((empty($customerAddress->getComment()) ? '' :  $customerAddress->getComment() . ', ') . $shippingAddress->getAdditionalAddressLine2());
+        }
 
         $customer->setAddress($customerAddress);
         $parcel->setTo($customer);
