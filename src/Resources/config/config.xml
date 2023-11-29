@@ -13,7 +13,6 @@
             <helpText lang="de-DE">Bestellungen, die mit ausgewählten Liefermethoden aufgegeben werden, werden an die ERIVE.delivery-Plattformen übermittelt</helpText>
             <entity>shipping_method</entity>
         </component>
-
         <input-field type="bool">
             <name>announceParcelOnShip</name>
             <label>Automatically announce parcel to ERIVE.delivery after delivery status was changed to 'Shipped'</label>
@@ -21,6 +20,14 @@
             <helpText>Parcel needs to be ready for pickup. Pickup is scheduled. </helpText>
             <helpText lang="de-DE">Paket muss fertig zur Abholung verpackt sein. Abholung wird eingeplant.</helpText>
             <defaultValue>False</defaultValue>
+        </input-field>
+        <input-field type="bool">
+            <name>countPackagingUnits</name>
+            <label>Print label for each product in order</label>
+            <label lang="de-DE">Paketschein für jedes Produkt in Bestellung drucken</label>
+            <helpText>Each product is packaged separately and needs a parcel label</helpText>
+            <helpText lang="de-DE">Jedes Produkt wird einzeln verpackt und benötigt ein Versandetikett</helpText>
+            <defaultValue>false</defaultValue>
         </input-field>
     </card>
     <card>
