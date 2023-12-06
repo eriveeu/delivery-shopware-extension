@@ -38,8 +38,6 @@ class EriveDelivery extends Plugin
         if ($context->keepUserData()) {
             return;
         }
-
-        // TODO: remove custom fields
     }
 
 
@@ -54,7 +52,6 @@ class EriveDelivery extends Plugin
                 )
             ), $context);
 
-        // custom fields are already created
         if ($customFields->getTotal() > 0) {
             return;
         }
