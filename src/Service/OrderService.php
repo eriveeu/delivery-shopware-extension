@@ -389,6 +389,6 @@ class OrderService
 
     protected function log(string $level, string $msg):void
     {
-        $this->logger->$level('ERIVE.Delivery: ' . $msg);
+        $this->logger->$level('ERIVE.delivery: ' . $msg);
     }
 }
