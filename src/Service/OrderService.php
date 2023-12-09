@@ -225,8 +225,8 @@ class OrderService
                 }
                 $parcelWeight += ($quantity * $prodWeight);
 
-                if (intval($parcelWeight) > 30) {
-                    $parcelWeight = 30;
+                if (intval($parcelWeight) > 31) {
+                    $parcelWeight = 30.99;
                 }
             }
         }
