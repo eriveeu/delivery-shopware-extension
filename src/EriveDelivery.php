@@ -40,7 +40,6 @@ class EriveDelivery extends Plugin
         }
     }
 
-
     public function createCustomFields(Context $context): void
     {
         $customFieldSetRepository = $this->container->get('custom_field_set.repository');
