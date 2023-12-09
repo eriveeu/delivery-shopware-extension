@@ -19,7 +19,7 @@
             <label lang="de-DE">Sendung automatisch bei ERIVE.delivery ankündigen, wenn der Bestellstatus auf "Versandt" gesetzt wurde</label>
             <helpText>Parcel needs to be ready for pickup. Pickup is scheduled. </helpText>
             <helpText lang="de-DE">Paket muss fertig zur Abholung verpackt sein. Abholung wird eingeplant.</helpText>
-            <defaultValue>False</defaultValue>
+            <defaultValue>false</defaultValue>
         </input-field>
         <input-field type="bool">
             <name>countPackagingUnits</name>
