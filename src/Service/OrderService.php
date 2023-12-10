@@ -354,12 +354,12 @@ class OrderService
 
     protected function processOrder(OrderEntity $order): void
     {
-        $this->log('info', 'Processing order # ' . $order->getOrderNumber() . ' (id: ' . $order->getId() . ')');
-
         if ($this->isReturnOrder($order)) {
             $this->log('info', 'Order #' . $order->getOrderNumber() . ' skipped (return order)');
             return;
         }
+
+        $this->log('info', 'Processing order # ' . $order->getOrderNumber() . ' (id: ' . $order->getId() . ')');
 
         $eriveEnv = $this->systemConfigService->get('EriveDelivery.config.eriveEnvironment', $order->getSalesChannelId()) ?? 'www';
         $apiKey = $this->systemConfigService->get('EriveDelivery.config.apiKey', $order->getSalesChannelId()) ?? '';
