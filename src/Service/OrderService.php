@@ -321,7 +321,7 @@ class OrderService
             $customFields[EriveDelivery::CUSTOM_FIELD_PARCEL_LABEL_URL] = $eriveStickerUrl;
 
             $this->orderRepository->update([['id' => $order->getId(), 'customFields' => $customFields]], Context::createDefaultContext());
-            $this->writeTrackingNumber($order->getId(), $parcelId, Context::createDefaultContext());
+            $this->writeTrackingNumber($order->getId(), $parcelId);
 
             $msg = 'Order #' . $order->getOrderNumber() . ' -> parcel number: ' . $parcelId;
             if (
