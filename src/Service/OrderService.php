@@ -51,10 +51,6 @@ class OrderService
 
     public function processAllOrders(): void
     {
-        if (!$this->isApiKeySet()) {
-            return;
-        }
-
         $orders = $this->getUnsubmittedOrders();
 
         if (count($orders) === 0) {
@@ -76,7 +72,6 @@ class OrderService
             return;
         }
 
-        $this->log('info', 'Processing order # ' . $order->getOrderNumber() . ' (id: ' . $orderId . ')');
         $this->processOrder($order);
     }
 
@@ -90,6 +85,22 @@ class OrderService
         return true;
     }
 
+    protected function readTrackingNumbers(string $orderId)
+    {
+        $criteria = new Criteria();
+        $criteria->addFilter(new EqualsFilter('id', $orderId));
+        $criteria->addAssociation('deliveries');
+        $context = Context::createDefaultContext();
+
+        $deliveries = $this->orderRepository->search($criteria, $context)->getEntities()->first()->getDeliveries();
+
+        $trackingCodes = [];
+        foreach ($deliveries as $delivery) {
+            $trackingCodes = array_merge($trackingCodes, $delivery->getTrackingCodes());
+        }
+        return $trackingCodes;
+    }
+
     protected function writeTrackingNumber(string $orderId, string $trackingCode)
     {
         $criteria = new Criteria();
@@ -99,7 +110,7 @@ class OrderService
 
         $delivery = $this->orderRepository->search($criteria, $context)->getEntities()->first()->getDeliveries();
 
-        $trackingCodes = count($delivery) > 0 ? $delivery->first()->getTrackingCodes() : [];
+        $trackingCodes = count($delivery) > 0 ? array_filter($delivery->first()->getTrackingCodes(), fn($tc) => $tc !== $trackingCode) : [];
         $trackingCodes[] = $trackingCode;
         $this->orderDeliveryRepository->update([['id' => $delivery->first()->getId(), 'trackingCodes' => $trackingCodes]], $context);
     }
@@ -122,15 +133,6 @@ class OrderService
             ]],
             $context
         );
-    }
-
-    protected function getCustomField($order, $fieldName, $default = null)
-    {
-        $customFields = $order->getCustomFields();
-        if (is_array($customFields) and array_key_exists($fieldName, $customFields)) {
-            return $customFields[$fieldName];
-        }
-        return $default;
     }
 
     protected function needsLabel($item): bool
@@ -280,30 +282,37 @@ class OrderService
 
     protected function processOrderWithParcelData(OrderEntity $order): void
     {
-        $parcelId = $this->getCustomField($order, EriveDelivery::CUSTOM_FIELD_PARCEL_NUMBER, false);
+        $trackingNumbers = $this->readTrackingNumbers($order->getId());
         $announceOnShip = $this->systemConfigService->get('EriveDelivery.config.announceParcelOnShip', $order->getSalesChannelId()) ?? false;
 
-        try {
-            $pubParcel = $parcelId ? ($this->companyApi->getParcelById($parcelId) ?? null) : null;
-        } catch(ApiException $e) {
-            switch (intval($e->getCode())) {
-                case 404:
-                    $this->log('error', 'Parcel ' . $parcelId . ' does not exist');
-                    $this->removeTrackingNumber($order->getId(), $parcelId);
-                    break;
-                case 400:
-                case 401:
-                case 403:
-                case 500:
-                    $this->log('critical', 'API Error! ' . $e->getMessage());
-                    return;
-                default:
-                    break;
+        foreach ($trackingNumbers as $trackingNumber) {
+            try {
+                $pubParcel = $trackingNumber ? ($this->companyApi->getParcelById($trackingNumber) ?? null) : null;
+            } catch(ApiException $e) {
+                switch (intval($e->getCode())) {
+                    case 404:
+                        $this->log('error', 'Parcel ' . $trackingNumber . ' does not exist');
+                        $this->removeTrackingNumber($order->getId(), $trackingNumber);
+                        break;
+                    case 400:
+                    case 401:
+                    case 403:
+                    case 500:
+                        $this->log('critical', 'API Error! ' . $e->getMessage());
+                        return;
+                    default:
+                        break;
+                }
+                $pubParcel = null;
             }
-            $pubParcel = null;
+
+            if ($pubParcel) {
+                $parcelId = $trackingNumber;
+                break;
+            }
         }
 
-        if (!$pubParcel) {
+        if (!isset($pubParcel)) {
             $preparedParcel = $this->populateEriveDeliveryParcel($order, $announceOnShip);
             $pubParcel = $this->publishParcelToEriveDelivery($preparedParcel);
 
@@ -345,10 +354,12 @@ class OrderService
 
     protected function processOrder(OrderEntity $order): void
     {
-        if ($this->getCustomField($order, 'isReturnOrder')) {
+        if ($this->isReturnOrder($order)) {
             $this->log('info', 'Order #' . $order->getOrderNumber() . ' skipped (return order)');
             return;
         }
+
+        $this->log('info', 'Processing order # ' . $order->getOrderNumber() . ' (id: ' . $order->getId() . ')');
 
         $eriveEnv = $this->systemConfigService->get('EriveDelivery.config.eriveEnvironment', $order->getSalesChannelId()) ?? 'www';
         $apiKey = $this->systemConfigService->get('EriveDelivery.config.apiKey', $order->getSalesChannelId()) ?? '';
@@ -390,5 +401,11 @@ class OrderService
     protected function log(string $level, string $msg):void
     {
         $this->logger->$level('ERIVE.delivery: ' . $msg);
+    }
+
+    protected function isReturnOrder(OrderEntity $order): bool
+    {
+        $customFields = $order->getCustomFields();
+        return is_array($customFields) && array_key_exists('isReturnOrder', $customFields) && $customFields['isReturnOrder'];
     }
 }
