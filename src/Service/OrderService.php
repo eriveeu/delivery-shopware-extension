@@ -368,7 +368,7 @@ class OrderService
 
         switch ($eriveEnv) {
             case 'www':
-                $this->config->setHost('https://' . $eriveEnv . '.ERIVE.Delivery/api/v1');
+                $this->config->setHost('https://' . $eriveEnv . '.erive.delivery/api/v1');
                 $this->config->setApiKey('key', $apiKey);
                 break;
             case 'custom':
