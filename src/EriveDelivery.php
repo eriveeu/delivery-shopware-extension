@@ -46,7 +46,7 @@ class EriveDelivery extends Plugin
     {
         $customFieldSetRepository = $this->container->get('custom_field_set.repository');
 
-        foreach ($this->getCustomFieldSetIds()->getIds() as $customFieldSetId) {
+        foreach ($this->getCustomFieldSetIds($context)->getIds() as $customFieldSetId) {
             $customFieldSetRepository->delete([['id' => $customFieldSetId]], $context);
         }
     }
@@ -55,14 +55,14 @@ class EriveDelivery extends Plugin
     {
         $customFieldSetRepository = $this->container->get('custom_field_set.repository');
 
-        if ($this->getCustomFieldSetIds()->getTotal() > 0) {
+        if ($this->getCustomFieldSetIds($context)->getTotal() > 0) {
             return;
         }
 
-        $customFieldSetRepository->insert([$this->getCustomFieldsConfiguration()], $context);
+        $customFieldSetRepository->create([$this->getCustomFieldsConfiguration()], $context);
     }
 
-    public function getCustomFieldSetIds($customFieldSetRepository) {
+    public function getCustomFieldSetIds(Context $context) {
         return $this->container->get('custom_field_set.repository')->searchIds(
             (new Criteria())->addFilter(
                 new EqualsFilter('name', self::CUSTOM_FIELD_SET_PREFIX)
