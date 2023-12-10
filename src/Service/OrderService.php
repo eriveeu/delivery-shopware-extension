@@ -121,7 +121,33 @@ class OrderService
         $this->processOrder($order);
     }
 
-    protected function writeTrackingNumber($orderId, $trackingCode)
+    protected function isApiKeySet($key = 'key'): bool
+    {
+        if (empty($this->config->getApiKey($key))) {
+            $this->log('critical', 'API key not set in configuration');
+            return false;
+        }
+
+        return true;
+    }
+
+    protected function readTrackingNumbers(string $orderId)
+    {
+        $criteria = new Criteria();
+        $criteria->addFilter(new EqualsFilter('id', $orderId));
+        $criteria->addAssociation('deliveries');
+        $context = Context::createDefaultContext();
+
+        $deliveries = $this->orderRepository->search($criteria, $context)->getEntities()->first()->getDeliveries();
+
+        $trackingCodes = [];
+        foreach ($deliveries as $delivery) {
+            $trackingCodes = array_merge($trackingCodes, $delivery->getTrackingCodes());
+        }
+        return $trackingCodes;
+    }
+
+    protected function writeTrackingNumber(string $orderId, string $trackingCode)
     {
         $criteria = new Criteria();
         $criteria->addFilter(new EqualsFilter('id', $orderId));
@@ -316,28 +342,37 @@ class OrderService
 
     protected function processOrderWithParcelData($order)
     {
-        $parcelId = $this->getCustomField($order, $this->customParcelIdField, false);
-        try {
-            $pubParcel = $parcelId ? ($this->companyApi->getParcelById($parcelId) ?? null) : null;
-        } catch(ApiException $e) {
-            switch (intval($e->getCode())) {
-                case 404:
-                    $this->logger->error('ERIVE.Delivery: Parcel ' . $parcelId . ' does not exist');
-                    $this->removeTrackingNumber($order->getId(), $parcelId);
-                    break;
-                case 400:
-                case 401:
-                case 403:
-                case 500:
-                    $this->logger->critical('ERIVE.Delivery: API Error! ' . $e->getMessage());
-                    return;
-                default:
-                    break;
+        $trackingNumbers = $this->readTrackingNumbers($order->getId());
+        $announceOnShip = $this->systemConfigService->get('EriveDelivery.config.announceParcelOnShip', $order->getSalesChannelId()) ?? false;
+
+        foreach ($trackingNumbers as $trackingNumber) {
+            try {
+                $pubParcel = $trackingNumber ? ($this->companyApi->getParcelById($trackingNumber) ?? null) : null;
+            } catch(ApiException $e) {
+                switch (intval($e->getCode())) {
+                    case 404:
+                        $this->log('error', 'Parcel ' . $trackingNumber . ' does not exist');
+                        $this->removeTrackingNumber($order->getId(), $trackingNumber);
+                        break;
+                    case 400:
+                    case 401:
+                    case 403:
+                    case 500:
+                        $this->log('critical', 'API Error! ' . $e->getMessage());
+                        return;
+                    default:
+                        break;
+                }
+                $pubParcel = null;
             }
-            $pubParcel = null;
+
+            if ($pubParcel) {
+                $parcelId = $trackingNumber;
+                break;
+            }
         }
 
-        if (!$pubParcel) {
+        if (!isset($pubParcel)) {
             $preparedParcel = $this->populateEriveDeliveryParcel($order);
             $pubParcel = $this->publishParcelToEriveDelivery($preparedParcel);
 
@@ -355,7 +390,7 @@ class OrderService
             $customFields[$this->customParcelIdField] = $parcelId;
             $customFields[$this->customStickerUrlField] = $eriveStickerUrl;
 
-            $this->orderRepository->update([['id' => $order->getId(), 'customFields' => $customFields]], $this->context);
+            $this->orderRepository->update([['id' => $order->getId(), 'customFields' => $customFields]], Context::createDefaultContext());
             $this->writeTrackingNumber($order->getId(), $parcelId);
 
             $msg = 'ERIVE.Delivery: Order #' . $order->getOrderNumber() . ' -> parcel number: ' . $parcelId;
