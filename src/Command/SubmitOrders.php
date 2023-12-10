@@ -22,14 +22,12 @@ class SubmitOrders extends Command
         $this->orderService = $orderService;
     }
 
-    // Provides a description, printed out in bin/console
     protected function configure(): void
     {
         $this->setName('erive:submit-orders');
         $this->setDescription('Synchronizes all orders from Shopware to ERIVE.delivery');
     }
 
-    // Actual code executed in the command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->orderService->processAllOrders();
