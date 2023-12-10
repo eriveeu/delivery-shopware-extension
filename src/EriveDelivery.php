@@ -46,7 +46,7 @@ class EriveDelivery extends Plugin
     {
         $customFieldSetRepository = $this->container->get('custom_field_set.repository');
 
-        foreach ($this->getCustomFieldSetIds() as $customFieldSetId) {
+        foreach ($this->getCustomFieldSetIds()->getIds() as $customFieldSetId) {
             $customFieldSetRepository->delete([['id' => $customFieldSetId]], $context);
         }
     }
