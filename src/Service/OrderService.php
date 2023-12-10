@@ -51,10 +51,6 @@ class OrderService
 
     public function processAllOrders(): void
     {
-        if (!$this->isApiKeySet()) {
-            return;
-        }
-
         $orders = $this->getUnsubmittedOrders();
 
         if (count($orders) === 0) {
@@ -76,7 +72,6 @@ class OrderService
             return;
         }
 
-        $this->log('info', 'Processing order # ' . $order->getOrderNumber() . ' (id: ' . $orderId . ')');
         $this->processOrder($order);
     }
 
@@ -115,7 +110,7 @@ class OrderService
 
         $delivery = $this->orderRepository->search($criteria, $context)->getEntities()->first()->getDeliveries();
 
-        $trackingCodes = count($delivery) > 0 ? $delivery->first()->getTrackingCodes() : [];
+        $trackingCodes = count($delivery) > 0 ? array_filter($delivery->first()->getTrackingCodes(), fn($tc) => $tc !== $trackingCode) : [];
         $trackingCodes[] = $trackingCode;
         $this->orderDeliveryRepository->update([['id' => $delivery->first()->getId(), 'trackingCodes' => $trackingCodes]], $context);
     }
@@ -359,6 +354,8 @@ class OrderService
 
     protected function processOrder(OrderEntity $order): void
     {
+        $this->log('info', 'Processing order # ' . $order->getOrderNumber() . ' (id: ' . $order->getId() . ')');
+
         if ($this->isReturnOrder($order)) {
             $this->log('info', 'Order #' . $order->getOrderNumber() . ' skipped (return order)');
             return;
