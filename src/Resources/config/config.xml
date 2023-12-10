@@ -60,20 +60,24 @@
         <input-field>
             <name>customApiEndpoint</name>
             <label>Custom API Endpoint</label>
+            <label lang="de-DE">Benutzerdefinierter API-Endpunkt</label>
             <helpText>Endpoint to use if Erive Server Environment is set to custom. e.g. ERIVE on your local machine, test environment</helpText>
+            <helpText lang="de-DE">Zu verwendender Endpunkt, wenn die Erive-Serverumgebung auf „Benutzerdefiniert“ eingestellt ist. z.B. ERIVE auf Ihrem lokalen Computer, Testumgebung</helpText>
             <defaultValue>https://gth.test/api/v1</defaultValue>
         </input-field>
         <input-field type="password">
             <name>apiTestKey</name>
             <label>Test API Key (DEV, STAGE, custom)</label>
-            <label lang="de-DE">API Key Testumgebung</label>
+            <label lang="de-DE">API Key Testumgebung (DEV, STAGE, custom)</label>
             <helpText>Company API Key for Testing</helpText>
+            <helpText lang="de-DE">Unternehmens-API-Schlüssel zum Testen</helpText>
         </input-field>
         <input-field type="password">
             <name>apiKey</name>
             <label>Production API Key</label>
             <label lang="de-DE">API Key Produktion</label>
             <helpText>Company API Key for PROD</helpText>
+            <helpText lang="de-DE">Unternehmens-API-Schlüssel zum Produktion</helpText>
         </input-field>
     </card>
 </config>
