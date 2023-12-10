@@ -124,15 +124,6 @@ class OrderService
         );
     }
 
-    protected function getCustomField($order, $fieldName, $default = null)
-    {
-        $customFields = $order->getCustomFields();
-        if (is_array($customFields) and array_key_exists($fieldName, $customFields)) {
-            return $customFields[$fieldName];
-        }
-        return $default;
-    }
-
     protected function needsLabel($item): bool
     {
         if ($item->getType() !== 'product' || !empty($item->getParentId())) {
@@ -345,7 +336,7 @@ class OrderService
 
     protected function processOrder(OrderEntity $order): void
     {
-        if ($this->getCustomField($order, 'isReturnOrder')) {
+        if ($this->isReturnOrder($order)) {
             $this->log('info', 'Order #' . $order->getOrderNumber() . ' skipped (return order)');
             return;
         }
@@ -390,5 +381,11 @@ class OrderService
     protected function log(string $level, string $msg):void
     {
         $this->logger->$level('ERIVE.Delivery: ' . $msg);
+    }
+
+    protected function isReturnOrder(OrderEntity $order): bool
+    {
+        $customFields = $order->getCustomFields();
+        return is_array($customFields) && array_key_exists('isReturnOrder', $customFields) && $customFields['isReturnOrder'];
     }
 }
