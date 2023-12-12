@@ -19,7 +19,7 @@
       "url": "https://github.com/eriveeu/delivery-api-client-php.git"
     }
   ],
-  "license": "MIT",
+  "license": "proprietary",
   "autoload": {
     "psr-4": {
       "Erive\\Delivery\\": "src/"
