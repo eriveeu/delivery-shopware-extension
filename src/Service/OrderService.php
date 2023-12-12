@@ -199,7 +199,7 @@ class OrderService
         return $this->orderRepository->search($criteria, Context::createDefaultContext())->getEntities()->first();
     }
 
-    protected function populateEriveDeliveryParcel($order, $announceOnShip): Parcel
+    protected function populateEriveDeliveryParcel($order, $announceOnShip)
     {
         $shippingAddress = $order->getDeliveries()->first()->getShippingOrderAddress();
         $countPackagingUnits = $this->systemConfigService->get('EriveDelivery.config.countPackagingUnits', $order->getSalesChannelId()) ?? false;
@@ -233,40 +233,60 @@ class OrderService
             }
         }
 
-        $parcel = new Parcel();
-        $parcel->setExternalReference($order->getOrderNumber());
-        $parcel->setComment($order->getCustomerComment() ?: '');
-        $parcel->setWeight($parcelWeight);
-        $parcel->setWidth($parcelWidth);
-        $parcel->setLength($parcelLength);
-        $parcel->setHeight($parcelHeight);
-        $parcel->setPackagingUnits($countPackagingUnits ? $totalPackagingUnits : 1);
+        try {
+            $parcel = new Parcel();
+            $parcel->setExternalReference($order->getOrderNumber() ?? '-');
+            $parcel->setComment($order->getCustomerComment() ?? '');
+            $parcel->setWeight($parcelWeight);
+            $parcel->setWidth($parcelWidth);
+            $parcel->setLength($parcelLength);
+            $parcel->setHeight($parcelHeight);
+            $parcel->setPackagingUnits($countPackagingUnits ? $totalPackagingUnits : 1);
 
-        $orderDeliveryStatus = $order->getDeliveries()->first()->getStateMachineState()->getTechnicalName();
-        if ($announceOnShip && ($orderDeliveryStatus === 'shipped')) {
-            $parcel->setStatus(Parcel::STATUS_ANNOUNCED);
+            $orderDeliveryStatus = $order->getDeliveries()->first()->getStateMachineState()->getTechnicalName();
+            if ($announceOnShip && ($orderDeliveryStatus === 'shipped')) {
+                $parcel->setStatus(Parcel::STATUS_ANNOUNCED);
+            }
+        } catch (Throwable $e) {
+            $this->log('critical', 'Unable to create a parcel: ' . $e->getMessage());
+            return;
+        }
+        
+        try {
+            $customer = new Customer();
+            $customer->setName(implode(' ', [$order->getOrderCustomer()->getFirstName(), $order->getOrderCustomer()->getLastName()]) ?? '-');
+            $customer->setEmail($order->getOrderCustomer()->getEmail() ?? '-');
+            $customer->setPhone($shippingAddress->getPhoneNumber() ?: '0');
+        } catch (Throwable $e) {
+            $this->log('critical', 'Unable to create customer: ' . $e->getMessage());
+            return;
         }
 
-        $customer = new Customer();
-        $customer->setName(strval($order->getOrderCustomer()->getCustomer()));
-        $customer->setEmail($order->getOrderCustomer()->getEmail());
-        $customer->setPhone($shippingAddress->getPhoneNumber() ?: '0');
-
-        $customerAddress = new Address();
-        $customerAddress->setCountry($shippingAddress->getCountry()->getIso());
-        $customerAddress->setCity($shippingAddress->getCity());
-        $customerAddress->setZip($shippingAddress->getZipcode());
-        $customerAddress->setStreet($shippingAddress->getStreet());
-        $customerAddress->setStreetNumber(preg_replace('/^.*?(?=\d)/', '', $shippingAddress->getStreet()));
-        if (!empty($shippingAddress->getAdditionalAddressLine1())) {
-            $customerAddress->setComment((empty($customerAddress->getComment()) ? '' :  $customerAddress->getComment() . ', ') . $shippingAddress->getAdditionalAddressLine1());
+        try {
+            $customerAddress = new Address();
+            $customerAddress->setCountry($shippingAddress->getCountry()->getIso());
+            $customerAddress->setCity($shippingAddress->getCity() ?? '-');
+            $customerAddress->setZip($shippingAddress->getZipcode() ?? '-');
+            $customerAddress->setStreet($shippingAddress->getStreet() ?? '-');
+            $customerAddress->setStreetNumber(preg_replace('/^.*?(?=\d)/', '', $shippingAddress->getStreet()));
+            if (!empty($shippingAddress->getAdditionalAddressLine1())) {
+                $customerAddress->setComment((empty($customerAddress->getComment()) ? '' :  $customerAddress->getComment() . ', ') . $shippingAddress->getAdditionalAddressLine1());
+            }
+            if (!empty($shippingAddress->getAdditionalAddressLine2())) {
+                $customerAddress->setComment((empty($customerAddress->getComment()) ? '' :  $customerAddress->getComment() . ', ') . $shippingAddress->getAdditionalAddressLine2());
+            }
+        } catch (Throwable $e) {
+            $this->log('critical', 'Unable to create customer address: ' . $e->getMessage());
+            return;
         }
-        if (!empty($shippingAddress->getAdditionalAddressLine2())) {
-            $customerAddress->setComment((empty($customerAddress->getComment()) ? '' :  $customerAddress->getComment() . ', ') . $shippingAddress->getAdditionalAddressLine2());
-        }
 
-        $customer->setAddress($customerAddress);
-        $parcel->setTo($customer);
+        try {
+            $customer->setAddress($customerAddress);
+            $parcel->setTo($customer);
+        } catch (Throwable $e) {
+            $this->log('critical', 'Unable to populate parcel data: ' . $e->getMessage());
+            return;
+        }
 
         return $parcel;
     }
@@ -314,6 +334,9 @@ class OrderService
 
         if (!isset($pubParcel)) {
             $preparedParcel = $this->populateEriveDeliveryParcel($order, $announceOnShip);
+            if ($preparedParcel === null) {
+                return;
+            }
             $pubParcel = $this->publishParcelToEriveDelivery($preparedParcel);
 
             if ($pubParcel === null || !$pubParcel['success']) {
