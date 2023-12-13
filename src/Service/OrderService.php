@@ -59,7 +59,11 @@ class OrderService
         }
 
         foreach ($orders as $order) {
-            $this->processOrder($order);
+            try {
+                $this->processOrder($order);
+            } catch (\Throwable $th) {
+                $this->log('error', 'Unable to process order ' . $order->getOrderNumber() . ': ' . $th->getMessage());
+            }
         }
     }
 
@@ -72,7 +76,11 @@ class OrderService
             return;
         }
 
-        $this->processOrder($order);
+        try {
+            $this->processOrder($order);
+        } catch (\Throwable $th) {
+            $this->log('error', 'Unable to process order' . $order->getOrderNumber() . ': ' . $th->getMessage());
+        }
     }
 
     protected function isApiKeySet($key = 'key'): bool
@@ -247,7 +255,7 @@ class OrderService
             if ($announceOnShip && ($orderDeliveryStatus === 'shipped')) {
                 $parcel->setStatus(Parcel::STATUS_ANNOUNCED);
             }
-        } catch (Throwable $e) {
+        } catch (\Throwable $e) {
             $this->log('critical', 'Unable to create a parcel: ' . $e->getMessage());
             return;
         }
@@ -257,14 +265,28 @@ class OrderService
             $customer->setName(implode(' ', [$order->getOrderCustomer()->getFirstName(), $order->getOrderCustomer()->getLastName()]) ?? '-');
             $customer->setEmail($order->getOrderCustomer()->getEmail() ?? '-');
             $customer->setPhone($shippingAddress->getPhoneNumber() ?: '0');
-        } catch (Throwable $e) {
+        } catch (\Throwable $e) {
             $this->log('critical', 'Unable to create customer: ' . $e->getMessage());
             return;
         }
 
         try {
             $customerAddress = new Address();
-            $customerAddress->setCountry($shippingAddress->getCountry()->getIso());
+            $country = $shippingAddress->getCountry()->getIso();
+            $allowedValues = $customerAddress->getCountryAllowableValues();
+            if (!in_array($country, $allowedValues, true)) {
+                $this->log(
+                    'error', 
+                    sprintf(
+                        "Invalid value '%s' for 'country', must be one of '%s'",
+                        $country,
+                        implode("', '", $allowedValues)
+                    )
+                );
+                return;
+            } else {
+                $customerAddress->setCountry($country);
+            }
             $customerAddress->setCity($shippingAddress->getCity() ?? '-');
             $customerAddress->setZip($shippingAddress->getZipcode() ?? '-');
             $customerAddress->setStreet($shippingAddress->getStreet() ?? '-');
@@ -275,15 +297,26 @@ class OrderService
             if (!empty($shippingAddress->getAdditionalAddressLine2())) {
                 $customerAddress->setComment((empty($customerAddress->getComment()) ? '' :  $customerAddress->getComment() . ', ') . $shippingAddress->getAdditionalAddressLine2());
             }
-        } catch (Throwable $e) {
+        } catch (\Throwable $e) {
             $this->log('critical', 'Unable to create customer address: ' . $e->getMessage());
             return;
         }
 
         try {
-            $customer->setAddress($customerAddress);
-            $parcel->setTo($customer);
-        } catch (Throwable $e) {
+            if ($customerAddress->valid()) {
+                $customer->setAddress($customerAddress);
+                
+                if ($customer->valid()) {
+                    $parcel->setTo($customer);
+                } else {
+                    $this->log('error', 'Unable to create customer');
+                    return;
+                }
+            } else {
+                $this->log('error', 'Unable to create customer address');
+                return;
+            }
+        } catch (\Throwable $e) {
             $this->log('critical', 'Unable to populate parcel data: ' . $e->getMessage());
             return;
         }
