@@ -39,7 +39,7 @@
             <label lang="de-DE">Aktivieren Sie die automatische Ausführung der geplanten Aufgabe</label>
             <helpText>Scheduled task is designed to periodically process all orders and make sure that all relevant orders are published to ERIVE.delivery</helpText>
             <helpText lang="de-DE">Die geplante Aufgabe dient dazu, alle Bestellungen regelmäßig zu verarbeiten und sicherzustellen, dass alle relevanten Bestellungen in ERIVE.delivery veröffentlicht werden</helpText>
-            <defaultValue>false</defaultValue>
+            <defaultValue>true</defaultValue>
         </input-field>
         <input-field type="int">
             <name>scheduledTaskInterval</name>
