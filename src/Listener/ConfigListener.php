@@ -11,7 +11,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\System\SystemConfig\Event\BeforeSystemConfigChangedEvent;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Erive\Delivery\ScheduledTask\OrderSubmission\OrderSubmissionTask;
-use Shopware\Core\Framework\MessageQueue\ScheduledTask\ScheduledTaskEntity;
+use Shopware\Core\Framework\MessageQueue\ScheduledTask\ScheduledTaskDefinition;
 
 class ConfigListener
 {
@@ -65,8 +65,8 @@ class ConfigListener
         $upsertCommand = [
             'id' => $taskId,
             'status' => $event->getKey() === self::CONFIG_ENABLE_SCHEDULED_TASK ?
-                ($event->getValue() ? 'scheduled' : 'skipped') :
-                ($this->systemConfigService->get(self::CONFIG_ENABLE_SCHEDULED_TASK) ? 'scheduled' : 'skipped')
+                ($event->getValue() ? ScheduledTaskDefinition::STATUS_SCHEDULED : ScheduledTaskDefinition::STATUS_INACTIVE) :
+                ($this->systemConfigService->get(self::CONFIG_ENABLE_SCHEDULED_TASK) ? ScheduledTaskDefinition::STATUS_SCHEDULED : ScheduledTaskDefinition::STATUS_INACTIVE)
         ];
 
         if ($event->getKey() === self::CONFIG_SCHEDULED_TASK_INTERVAL) {
