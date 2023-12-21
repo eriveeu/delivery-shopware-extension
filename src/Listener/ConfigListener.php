@@ -18,15 +18,13 @@ class ConfigListener
     protected const CONFIG_ENABLE_SCHEDULED_TASK = 'EriveDelivery.config.enableScheduledTask';
     protected const CONFIG_SCHEDULED_TASK_INTERVAL = 'EriveDelivery.config.scheduledTaskInterval';
 
-    protected SystemConfigService $systemConfigService;
-    protected EntityRepositoryInterface $scheduledTaskRepository;
-
     protected array $configKeys = [
         self::CONFIG_ENABLE_SCHEDULED_TASK, 
         self::CONFIG_SCHEDULED_TASK_INTERVAL
     ];
 
-    protected EntityRepositoryInterface $repository;
+    protected SystemConfigService $systemConfigService;
+    protected EntityRepositoryInterface $scheduledTaskRepository;
 
     public function __construct(
         SystemConfigService $systemConfigService,
