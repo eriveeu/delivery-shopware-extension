@@ -45,7 +45,6 @@ class ConfigListener
 
         if ($event->getSalesChannelId() !== null) {
             $event->setValue(null);
-            $event->stopPropagation();
         }
         
         if ($event->getValue() === null) {
