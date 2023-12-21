@@ -7,7 +7,7 @@ namespace Erive\Delivery\Listener;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\System\SystemConfig\Event\BeforeSystemConfigChangedEvent;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Erive\Delivery\ScheduledTask\OrderSubmission\OrderSubmissionTask;
@@ -24,11 +24,11 @@ class ConfigListener
     ];
 
     protected SystemConfigService $systemConfigService;
-    protected EntityRepositoryInterface $scheduledTaskRepository;
+    protected EntityRepository $scheduledTaskRepository;
 
     public function __construct(
         SystemConfigService $systemConfigService,
-        EntityRepositoryInterface $scheduledTaskRepository
+        EntityRepository $scheduledTaskRepository
     ) {
         $this->systemConfigService = $systemConfigService;
         $this->scheduledTaskRepository = $scheduledTaskRepository;
