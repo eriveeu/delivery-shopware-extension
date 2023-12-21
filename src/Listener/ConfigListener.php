@@ -45,6 +45,7 @@ class ConfigListener
 
         if ($event->getSalesChannelId() !== null) {
             $event->setValue(null);
+            $event->stopPropagation();
         }
         
         if ($event->getValue() === null) {
@@ -64,17 +65,22 @@ class ConfigListener
             return;
         }
 
-        $status = event->getKey() === self::CONFIG_ENABLE_SCHEDULED_TASK ?
-            ($event->getValue() ? 'scheduled' : 'skipped') :
-            ($this->systemConfigService->get(self::CONFIG_ENABLE_SCHEDULED_TASK) ? 'scheduled' : 'skipped');
-        $runInterval = event->getKey() === self::CONFIG_SCHEDULED_TASK_INTERVAL ? 
-            $event->getValue() : 
-            ($this->systemConfigService->get(self::CONFIG_SCHEDULED_TASK_INTERVAL) ?? OrderSubmissionTask::getDefaultInterval());
         $upsertCommand = [
             'id' => $taskId,
-            'status' => $status,
-            'runInterval' => intval($runInterval)
+            'status' => $event->getKey() === self::CONFIG_ENABLE_SCHEDULED_TASK ?
+                ($event->getValue() ? 'scheduled' : 'skipped') :
+                ($this->systemConfigService->get(self::CONFIG_ENABLE_SCHEDULED_TASK) ? 'scheduled' : 'skipped')
         ];
+
+        if ($event->getKey() === self::CONFIG_SCHEDULED_TASK_INTERVAL) {
+            $runInterval = $event->getValue();
+            if (is_int($runInterval) && $runInterval > 0) {
+                $upsertCommand['runInterval'] = $runInterval;
+            } else {
+                $event->setValue($this->systemConfigService->get(self::CONFIG_SCHEDULED_TASK_INTERVAL));
+            }
+        }
+
         $this->scheduledTaskRepository->upsert([$upsertCommand], $context);
     }
 }

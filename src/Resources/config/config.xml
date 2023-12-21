@@ -37,12 +37,16 @@
             <name>enableScheduledTask</name>
             <label>Enable Scheduled task to run automatically'</label>
             <label lang="de-DE">Aktivieren Sie die automatische Ausführung der geplanten Aufgabe</label>
+            <helpText>Scheduled task is designed to periodically process all orders and make sure that all relevant orders are published to ERIVE.delivery</helpText>
+            <helpText lang="de-DE">Die geplante Aufgabe dient dazu, alle Bestellungen regelmäßig zu verarbeiten und sicherzustellen, dass alle relevanten Bestellungen in ERIVE.delivery veröffentlicht werden</helpText>
             <defaultValue>false</defaultValue>
         </input-field>
-        <input-field>
+        <input-field type="int">
             <name>scheduledTaskInterval</name>
             <label>Time interval to run the scheduled task (ms)</label>
             <label lang="de-DE">Zeitintervall zum Ausführen der geplanten Aufgabe (ms)</label>
+            <helpText>Default value is 300ms (every 5 minutes). You can set how often to run the scheduled processing of orders</helpText>
+            <helpText lang="de-DE">Der Standardwert beträgt 300 ms (alle 5 Minuten). Sie können festlegen, wie oft die geplante Verarbeitung von Bestellungen ausgeführt werden soll</helpText>
             <defaultValue>300</defaultValue>
         </input-field>
     </card>
@@ -95,11 +99,5 @@
             <helpText>Company API Key for PROD</helpText>
             <helpText lang="de-DE">Unternehmens-API-Schlüssel zum Produktion</helpText>
         </input-field>
-        <!-- <input-field type="bool">
-            <name>enableScheduledTask</name>
-            <label>Enable Scheduled task to run automatically'</label>
-            <label lang="de-DE">Aktivieren Sie die automatische Ausführung der geplanten Aufgabe</label>
-            <defaultValue>false</defaultValue>
-        </input-field> -->
     </card>
 </config>
