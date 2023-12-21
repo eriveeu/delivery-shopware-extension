@@ -16,14 +16,14 @@ use Shopware\Core\Framework\MessageQueue\ScheduledTask\ScheduledTaskEntity;
 class ConfigListener
 {
     protected const CONFIG_ENABLE_SCHEDULED_TASK = 'EriveDelivery.config.enableScheduledTask';
-    // protected const CONFIG_SCHEDULED_TASK_INTERVAL = 'EriveDelivery.config.scheduledTaskInterval';
+    protected const CONFIG_SCHEDULED_TASK_INTERVAL = 'EriveDelivery.config.scheduledTaskInterval';
 
     protected SystemConfigService $systemConfigService;
     protected EntityRepositoryInterface $scheduledTaskRepository;
 
     protected array $configKeys = [
         self::CONFIG_ENABLE_SCHEDULED_TASK, 
-        // self::CONFIG_SCHEDULED_TASK_INTERVAL
+        self::CONFIG_SCHEDULED_TASK_INTERVAL
     ];
 
     protected EntityRepositoryInterface $repository;
@@ -64,14 +64,16 @@ class ConfigListener
             return;
         }
 
+        $status = event->getKey() === self::CONFIG_ENABLE_SCHEDULED_TASK ?
+            ($event->getValue() ? 'scheduled' : 'skipped') :
+            ($this->systemConfigService->get(self::CONFIG_ENABLE_SCHEDULED_TASK) ? 'scheduled' : 'skipped');
+        $runInterval = event->getKey() === self::CONFIG_SCHEDULED_TASK_INTERVAL ? 
+            $event->getValue() : 
+            ($this->systemConfigService->get(self::CONFIG_SCHEDULED_TASK_INTERVAL) ?? OrderSubmissionTask::getDefaultInterval());
         $upsertCommand = [
             'id' => $taskId,
-            'status' => $event->getKey() === self::CONFIG_ENABLE_SCHEDULED_TASK ?
-                ($event->getValue() ? 'scheduled' : 'skipped') :
-                ($this->systemConfigService->get(self::CONFIG_ENABLE_SCHEDULED_TASK) ? 'scheduled' : 'skipped'),
-            // 'run_interval' => $event->getKey() === self::CONFIG_SCHEDULED_TASK_INTERVAL ? 
-            //     $event->getValue() : 
-            //     ($this->systemConfigService->get(self::CONFIG_SCHEDULED_TASK_INTERVAL) ?? OrderSubmissionTask::getDefaultInterval())
+            'status' => $status,
+            'runInterval' => intval($runInterval)
         ];
         $this->scheduledTaskRepository->upsert([$upsertCommand], $context);
     }

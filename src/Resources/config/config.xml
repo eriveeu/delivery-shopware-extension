@@ -30,7 +30,7 @@
             <defaultValue>false</defaultValue>
         </input-field>
     </card>
-    <!-- <card>
+    <card>
         <title>Scheduled Task Configuration (All Sales Channels)</title>
         <title lang="de-DE">Konfiguration geplanter Aufgaben (alle Vertriebskanäle)</title>
         <input-field type="bool">
@@ -45,7 +45,7 @@
             <label lang="de-DE">Zeitintervall zum Ausführen der geplanten Aufgabe (ms)</label>
             <defaultValue>300</defaultValue>
         </input-field>
-    </card> -->
+    </card>
     <card>
         <title>Environment configuration</title>
         <title lang="de-DE">Umgebungskonfiguration</title>
@@ -95,11 +95,11 @@
             <helpText>Company API Key for PROD</helpText>
             <helpText lang="de-DE">Unternehmens-API-Schlüssel zum Produktion</helpText>
         </input-field>
-        <input-field type="bool">
+        <!-- <input-field type="bool">
             <name>enableScheduledTask</name>
             <label>Enable Scheduled task to run automatically'</label>
             <label lang="de-DE">Aktivieren Sie die automatische Ausführung der geplanten Aufgabe</label>
             <defaultValue>false</defaultValue>
-        </input-field>
+        </input-field> -->
     </card>
 </config>
