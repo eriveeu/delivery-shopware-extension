@@ -43,10 +43,10 @@
         </input-field>
         <input-field type="int">
             <name>scheduledTaskInterval</name>
-            <label>Time interval to run the scheduled task (ms)</label>
-            <label lang="de-DE">Zeitintervall zum Ausführen der geplanten Aufgabe (ms)</label>
-            <helpText>Default value is 300ms (every 5 minutes). You can set how often to run the scheduled processing of orders</helpText>
-            <helpText lang="de-DE">Der Standardwert beträgt 300 ms (alle 5 Minuten). Sie können festlegen, wie oft die geplante Verarbeitung von Bestellungen ausgeführt werden soll</helpText>
+            <label>Time interval to run the scheduled task (sec)</label>
+            <label lang="de-DE">Zeitintervall zum Ausführen der geplanten Aufgabe (sec)</label>
+            <helpText>Default value is 300 sec (every 5 minutes). You can set how often to run the scheduled processing of orders</helpText>
+            <helpText lang="de-DE">Der Standardwert beträgt 300 sek (alle 5 Minuten). Sie können festlegen, wie oft die geplante Verarbeitung von Bestellungen ausgeführt werden soll</helpText>
             <defaultValue>300</defaultValue>
         </input-field>
     </card>
