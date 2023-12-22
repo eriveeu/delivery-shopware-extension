@@ -8,9 +8,9 @@
         <component name="sw-entity-multi-id-select">
             <name>deliveryMethods</name>
             <label>Whitelisted delivery methods for ERIVE.delivery</label>
-            <label lang="de-DE">Aufgeführte Versandmethoden für ERIVE.delivery</label>
+            <label lang="de-DE">Zugewiesene Versandmethoden für ERIVE.delivery</label>
             <helpText>Orders placed with selected delivery methods will be submitted to the ERIVE.delivery platform</helpText>
-            <helpText lang="de-DE">Bestellungen, die mit ausgewählten Liefermethoden aufgegeben werden, werden an die ERIVE.delivery-Plattformen übermittelt</helpText>
+            <helpText lang="de-DE">Bestellungen, die mit diesen Liefermethoden abgeschlossen werden, werden an die ERIVE.delivery-Plattformen übermittelt</helpText>
             <entity>shipping_method</entity>
         </component>
         <input-field type="bool">
@@ -24,21 +24,21 @@
         <input-field type="bool">
             <name>countPackagingUnits</name>
             <label>Print label for each product in order</label>
-            <label lang="de-DE">Paketschein für jedes Produkt in Bestellung drucken</label>
+            <label lang="de-DE">Versandetikett für jedes einzelne Produkt in Bestellung drucken</label>
             <helpText>Each product is packaged separately and needs a parcel label</helpText>
-            <helpText lang="de-DE">Jedes Produkt wird einzeln verpackt und benötigt ein Versandetikett</helpText>
+            <helpText lang="de-DE">Jedes Produkt wird einzeln verpackt und benötigt ein eingenes Versandetikett</helpText>
             <defaultValue>false</defaultValue>
         </input-field>
     </card>
     <card>
-        <title>Scheduled Task Configuration (All Sales Channels)</title>
-        <title lang="de-DE">Konfiguration geplanter Aufgaben (alle Vertriebskanäle)</title>
+        <title>Scheduled Task Configuration</title>
+        <title lang="de-DE">Scheduled Task (geplante Aufgabe)</title>
         <input-field type="bool">
             <name>enableScheduledTask</name>
             <label>Enable Scheduled task to run automatically'</label>
-            <label lang="de-DE">Aktivieren Sie die automatische Ausführung der geplanten Aufgabe</label>
+            <label lang="de-DE">Scheduled Task (geplante Aufgabe) aktivieren</label>
             <helpText>Scheduled task is designed to periodically process all orders and make sure that all relevant orders are published to ERIVE.delivery</helpText>
-            <helpText lang="de-DE">Die geplante Aufgabe dient dazu, alle Bestellungen regelmäßig zu verarbeiten und sicherzustellen, dass alle relevanten Bestellungen in ERIVE.delivery veröffentlicht werden</helpText>
+            <helpText lang="de-DE">Die geplante Aufgabe dient dazu, alle Bestellungen regelmäßig zu verarbeiten und sicherzustellen, dass alle relevanten Bestellungen an ERIVE.delivery übertragen werden</helpText>
             <defaultValue>true</defaultValue>
         </input-field>
         <input-field type="int">
