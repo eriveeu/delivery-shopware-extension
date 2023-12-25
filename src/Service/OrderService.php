@@ -83,10 +83,10 @@ class OrderService
         }
     }
 
-    protected function isApiKeySet($key = 'key'): bool
+    protected function isApiKeySet($salesChannelId = null,$key = 'key'): bool
     {
         if (empty($this->config->getApiKey($key))) {
-            $this->log('critical', 'API key not set in configuration');
+            $this->log('critical', 'API key not set in configuration for sales channel "' . $salesChannelId . '"');
             return false;
         }
 
@@ -437,7 +437,7 @@ class OrderService
                 break;
         }
 
-        if (!$this->isApiKeySet()) {
+        if (!$this->isApiKeySet($order->getSalesChannelId())) {
             return;
         }
 
@@ -456,7 +456,11 @@ class OrderService
 
     protected function log(string $level, string $msg):void
     {
-        $this->logger->$level('ERIVE.delivery: ' . $msg);
+        if (\method_exists($this->logger, $level)){
+            $this->logger->$level('ERIVE.delivery: ' . $msg);
+        } else {
+            $this->logger->notice($level, 'ERIVE.delivery (' . $level . '): ' . $msg);
+        }
     }
 
     protected function isReturnOrder(OrderEntity $order): bool
