@@ -83,7 +83,7 @@ class OrderService
         }
     }
 
-    protected function isApiKeySet($salesChannelId = null,$key = 'key'): bool
+    protected function isApiKeySet($salesChannelId = null, $key = 'key'): bool
     {
         if (empty($this->config->getApiKey($key))) {
             $this->log('critical', 'API key not set in configuration for sales channel "' . $salesChannelId . '"');
@@ -259,7 +259,7 @@ class OrderService
             $this->log('critical', 'Unable to create a parcel: ' . $e->getMessage());
             return;
         }
-        
+
         try {
             $customer = new Customer();
             $customer->setName(implode(' ', [$order->getOrderCustomer()->getFirstName(), $order->getOrderCustomer()->getLastName()]) ?? '-');
@@ -276,7 +276,7 @@ class OrderService
             $allowedValues = $customerAddress->getCountryAllowableValues();
             if (!in_array($country, $allowedValues, true)) {
                 $this->log(
-                    'error', 
+                    'error',
                     sprintf(
                         "Invalid value '%s' for 'country', must be one of '%s'",
                         $country,
@@ -292,10 +292,10 @@ class OrderService
             $customerAddress->setStreet($shippingAddress->getStreet() ?? '-');
             $customerAddress->setStreetNumber(preg_replace('/^.*?(?=\d)/', '', $shippingAddress->getStreet()));
             if (!empty($shippingAddress->getAdditionalAddressLine1())) {
-                $customerAddress->setComment((empty($customerAddress->getComment()) ? '' :  $customerAddress->getComment() . ', ') . $shippingAddress->getAdditionalAddressLine1());
+                $customerAddress->setComment((empty($customerAddress->getComment()) ? '' : $customerAddress->getComment() . ', ') . $shippingAddress->getAdditionalAddressLine1());
             }
             if (!empty($shippingAddress->getAdditionalAddressLine2())) {
-                $customerAddress->setComment((empty($customerAddress->getComment()) ? '' :  $customerAddress->getComment() . ', ') . $shippingAddress->getAdditionalAddressLine2());
+                $customerAddress->setComment((empty($customerAddress->getComment()) ? '' : $customerAddress->getComment() . ', ') . $shippingAddress->getAdditionalAddressLine2());
             }
         } catch (\Throwable $e) {
             $this->log('critical', 'Unable to create customer address: ' . $e->getMessage());
@@ -305,7 +305,7 @@ class OrderService
         try {
             if ($customerAddress->valid()) {
                 $customer->setAddress($customerAddress);
-                
+
                 if ($customer->valid()) {
                     $parcel->setTo($customer);
                 } else {
@@ -454,12 +454,12 @@ class OrderService
         $this->log('info', 'Order #' . $order->getOrderNumber() . ' skipped as shipping method is not whitelisted');
     }
 
-    protected function log(string $level, string $msg):void
+    protected function log(string $level, string $msg): void
     {
-        if (\method_exists($this->logger, $level)){
+        if (\method_exists($this->logger, $level)) {
             $this->logger->$level('ERIVE.delivery: ' . $msg);
         } else {
-            $this->logger->notice($level, 'ERIVE.delivery (' . $level . '): ' . $msg);
+            $this->logger->notice('ERIVE.delivery (' . $level . '): ' . $msg);
         }
     }
 
