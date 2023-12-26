@@ -11,6 +11,7 @@ use Shopware\Core\Framework\Plugin;
 use Shopware\Core\Framework\Plugin\Context\InstallContext;
 use Shopware\Core\Framework\Plugin\Context\UninstallContext;
 use Shopware\Core\System\CustomField\CustomFieldTypes;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\IdSearchResult;
 
 if (file_exists(__DIR__ . '/../vendor/autoload.php')) {
     require_once __DIR__ . '/../vendor/autoload.php';
@@ -62,7 +63,8 @@ class EriveDelivery extends Plugin
         $customFieldSetRepository->create([$this->getCustomFieldsConfiguration()], $context);
     }
 
-    public function getCustomFieldSetIds(Context $context) {
+    public function getCustomFieldSetIds(Context $context): IdSearchResult
+    {
         return $this->container->get('custom_field_set.repository')->searchIds(
             (new Criteria())->addFilter(
                 new EqualsFilter('name', self::CUSTOM_FIELD_SET_PREFIX)
