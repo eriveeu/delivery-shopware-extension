@@ -459,7 +459,7 @@ class OrderService
         if (\method_exists($this->logger, $level)){
             $this->logger->$level('ERIVE.delivery: ' . $msg);
         } else {
-            $this->logger->notice($level, 'ERIVE.delivery (' . $level . '): ' . $msg);
+            $this->logger->notice('ERIVE.delivery (' . $level . '): ' . $msg);
         }
     }
 
