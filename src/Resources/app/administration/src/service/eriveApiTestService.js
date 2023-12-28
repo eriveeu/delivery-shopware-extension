@@ -1,21 +1,30 @@
-const ApiService = Shopware.Classes.ApiService;
 const { Application } = Shopware;
 
-class ApiClient extends ApiService {
-  constructor(httpClient, loginService, apiEndpoint = "erive-api-test") {
-    super(httpClient, loginService, apiEndpoint);
+class ApiClient {
+  constructor(httpClient) {
+    this.httpClient = httpClient;
   }
 
-  check(values) {
-    const headers = this.getBasicHeaders({});
+  check(configValues) {
+    let baseUrl = "";
+    let apiKey = configValues["EriveDelivery.config.apiTestKey"].trim();
+    const eriveEnv = configValues["EriveDelivery.config.eriveEnvironment"].trim();
+    const url = "/company/parcelsFrom";
 
-    return this.httpClient
-      .post(`_action/${this.getApiBasePath()}/verify`, values, {
-        headers,
-      })
-      .then((response) => {
-        return ApiService.handleResponse(response);
-      });
+    switch (eriveEnv) {
+      case "www":
+        baseUrl = `https://${eriveEnv}.erive.delivery/api/v1`;
+        apiKey = configValues["EriveDelivery.config.apiKey"].trim();
+        break;
+      case "custom":
+        baseUrl = configValues["EriveDelivery.config.customApiEndpoint"].trim();
+        break;
+      default:
+        baseUrl = `https://${eriveEnv}.greentohome.at/api/v1`;
+        break;
+    }
+    baseUrl = baseUrl.endsWith("/") ? baseUrl.substring(0, baseUrl.length - 1) : baseUrl;
+    return this.httpClient.get(`${baseUrl}${url}?key=${apiKey}`);
   }
 }
 
