@@ -30,5 +30,5 @@ class ApiClient {
 
 Application.addServiceProvider("eriveApiTest", (container) => {
   const initContainer = Application.getContainer("init");
-  return new ApiClient(initContainer.httpClient, container.loginService);
+  return new ApiClient(initContainer.httpClient);
 });
