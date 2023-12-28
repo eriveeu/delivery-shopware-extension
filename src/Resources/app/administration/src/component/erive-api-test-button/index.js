@@ -1,6 +1,5 @@
 const { Component, Mixin } = Shopware;
 import template from "./erive-api-test-button.html.twig";
-// console(template);
 
 Component.register("erive-api-test-button", {
   template,
