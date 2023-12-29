@@ -79,5 +79,10 @@
             <helpText>Company API Key for PROD</helpText>
             <helpText lang="de-DE">Unternehmens-API-Schlüssel zum Produktion</helpText>
         </input-field>
+        <component name="erive-api-test-button">
+            <name>apiTest</name>
+            <label>API Connection test</label>
+            <label lang="de-DE">API Verbindung testen</label>
+        </component>
     </card>
 </config>
