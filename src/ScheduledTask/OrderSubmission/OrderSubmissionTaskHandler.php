@@ -4,6 +4,7 @@ namespace Erive\Delivery\ScheduledTask\OrderSubmission;
 
 use Erive\Delivery\Service\OrderService;
 use Psr\Log\LoggerInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\MessageQueue\ScheduledTask\ScheduledTaskHandler;
 
 class OrderSubmissionTaskHandler extends ScheduledTaskHandler

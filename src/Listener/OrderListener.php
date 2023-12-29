@@ -25,7 +25,7 @@ class OrderListener
     public function onOrderChangeState(OrderStateMachineStateChangeEvent $event): void
     {
         foreach($event->getOrder()->getDeliveries()->getShippingMethodIds() as $orderShippingMethodId) {
-            if (in_array($orderShippingMethodId, $this->systemConfigService->get('EriveDelivery.config.deliveryMethods') ?? [])) {
+            if (in_array($orderShippingMethodId, $this->systemConfigService->get('EriveDelivery.config.deliveryMethods', $event->getOrder()->getSalesChannelId()) ?? [])) {
                 $this->orderService->processOrderById($event->getOrderId());
                 break;
             }

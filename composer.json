@@ -2,7 +2,7 @@
   "name": "erive/delivery-shopware",
   "description": "ERIVE.delivery",
   "type": "shopware-platform-plugin",
-  "version": "0.3.2",
+  "version": "0.3.4",
   "authors": [
     {
       "name": "Erive GmbH"
@@ -19,7 +19,7 @@
       "url": "https://github.com/eriveeu/delivery-api-client-php.git"
     }
   ],
-  "license": "MIT",
+  "license": "proprietary",
   "autoload": {
     "psr-4": {
       "Erive\\Delivery\\": "src/"
