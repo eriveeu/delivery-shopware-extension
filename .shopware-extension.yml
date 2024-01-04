@@ -2,6 +2,7 @@ changelog:
   enabled: true
 
 build:
+  shopwareVersionConstraint: "~6.4.20"
   zip:
     composer:
       enabled: true
