@@ -19,7 +19,17 @@ Component.register("erive-api-test-button", {
       while ($parent.actualConfigData === undefined) {
         $parent = $parent.$parent;
       }
-      return $parent.actualConfigData.null;
+
+      const actualConfigData = {};
+
+      for (const config of [$parent.actualConfigData.null, $parent.actualConfigData[$parent.currentSalesChannelId]]) {
+        for (const key in config) {
+          if (config[key] !== null) {
+            actualConfigData[key] = config[key];
+          }
+        }
+      }
+      return actualConfigData;
     },
   },
 
@@ -27,7 +37,6 @@ Component.register("erive-api-test-button", {
     saveFinish() {
       this.isSaveSuccessful = false;
     },
-
     check() {
       this.isLoading = true;
       this.eriveApiTest
