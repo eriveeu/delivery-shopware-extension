@@ -1,8 +1,0 @@
-**/vendor/
-.env
-.vscode/
-.idea/
-.views
-**/public/
-.DS_Store
-__*
