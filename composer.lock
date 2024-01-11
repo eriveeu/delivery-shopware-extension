@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "09204854dab1946b6fd83840493d7b48",
+    "content-hash": "4b267de38900aca1231d8316d492baf3",
     "packages": [
         {
             "name": "eriveeu/delivery-api-client",
