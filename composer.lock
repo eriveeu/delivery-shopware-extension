@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "cdad6a8923a5c91567806a90f17870b8",
+    "content-hash": "09204854dab1946b6fd83840493d7b48",
     "packages": [
         {
             "name": "eriveeu/delivery-api-client",
-            "version": "v0.1.1",
+            "version": "v0.1.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/eriveeu/delivery-api-client-php.git",
-                "reference": "ce9182d561c1cf918d479f68f4c958626d6e3c01"
+                "reference": "4596750f42b1e45655fdde13f22ec835992949a8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/eriveeu/delivery-api-client-php/zipball/ce9182d561c1cf918d479f68f4c958626d6e3c01",
-                "reference": "ce9182d561c1cf918d479f68f4c958626d6e3c01",
+                "url": "https://api.github.com/repos/eriveeu/delivery-api-client-php/zipball/4596750f42b1e45655fdde13f22ec835992949a8",
+                "reference": "4596750f42b1e45655fdde13f22ec835992949a8",
                 "shasum": ""
             },
             "require": {
@@ -64,10 +64,10 @@
                 "sdk"
             ],
             "support": {
-                "source": "https://github.com/eriveeu/delivery-api-client-php/tree/v0.1.1",
+                "source": "https://github.com/eriveeu/delivery-api-client-php/tree/v0.1.2",
                 "issues": "https://github.com/eriveeu/delivery-api-client-php/issues"
             },
-            "time": "2023-09-21T08:15:40+00:00"
+            "time": "2024-01-11T13:56:27+00:00"
         }
     ],
     "packages-dev": [],
