@@ -83,6 +83,7 @@ jobs:
           if: steps.checkTag.outputs.exists != 'true'
           uses: ncipollo/release-action@v1
           with:
+            makeLatest: true
             artifacts: /tmp/${{ env.EXTENSION_NAME }}.zip
             tag: ${{ env.EXTENSION_VERSION }}
             name: ${{ env.EXTENSION_VERSION }}
