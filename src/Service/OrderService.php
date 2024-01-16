@@ -16,6 +16,7 @@ use GuzzleHttp\Client;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
@@ -155,8 +156,9 @@ class OrderService
     protected function getCriteriaFilter($args = [])
     {
         return new AndFilter(array_merge([
+            new EqualsFilter('transactions.stateMachineState.technicalName', 'paid'),
             new OrFilter([
-                new EqualsFilter('transactions.stateMachineState.technicalName', 'paid'),
+                new EqualsFilter('deliveries.stateMachineState.technicalName', 'open'),
                 new EqualsFilter('deliveries.stateMachineState.technicalName', 'shipped'),
             ])
         ], $args));
@@ -175,17 +177,27 @@ class OrderService
         ], $args);
     }
 
-    protected function getUnsubmittedOrders(): EntitySearchResult
+    protected function getUnsubmittedOrders(): EntityCollection
     {
         $criteria = new Criteria();
         $criteria->addFilter($this->getCriteriaFilter());
         $criteria->addAssociations($this->getCriteriaAssociations());
 
         try {
-            return $this->orderRepository->search($criteria, Context::createDefaultContext());
+            $orders = $this->orderRepository->search($criteria, Context::createDefaultContext());
         } catch (Exception $e) {
             $this->log('critical', 'Exception when searching for unsynchronized orders: ', $e->getMessage());
         }
+
+        $retOrders = new EntityCollection();
+
+        foreach ($orders as $order) {
+            if ($this->isOrderTransferable($order)) {
+                $retOrders->add($order);
+            }
+        }
+
+        return $retOrders;
     }
 
     protected function announceParcel($parcelId): void
@@ -302,20 +314,19 @@ class OrderService
             return;
         }
 
-        try {
-            if ($customerAddress->valid()) {
-                $customer->setAddress($customerAddress);
+        if (!$customerAddress->valid()) {
+            $this->log('error', 'Unable to create customer address');
+            return;
+        }
 
-                if ($customer->valid()) {
-                    $parcel->setTo($customer);
-                } else {
-                    $this->log('error', 'Unable to create customer');
-                    return;
-                }
-            } else {
-                $this->log('error', 'Unable to create customer address');
-                return;
-            }
+        if (!$customer->valid()) {
+            $this->log('error', 'Unable to create customer');
+            return;
+        }
+
+        try {
+            $customer->setAddress($customerAddress);
+            $parcel->setTo($customer);
         } catch (\Throwable $e) {
             $this->log('critical', 'Unable to populate parcel data: ' . $e->getMessage());
             return;
@@ -357,6 +368,9 @@ class OrderService
                         break;
                 }
                 $pubParcel = null;
+            } catch (\Throwable $e) {
+                $this->log('critical', 'Client Error! ' . $e->getMessage());
+                return;
             }
 
             if ($pubParcel) {
@@ -441,17 +455,22 @@ class OrderService
             return;
         }
 
-        $allowedDeliveryMethodIds = $this->systemConfigService->get('EriveDelivery.config.deliveryMethods', $order->getSalesChannelId()) ?? [];
         $this->companyApi = new CompanyApi(new Client(), $this->config);
 
+        if ($this->isOrderTransferable($order)) {
+            $this->processOrderWithParcelData($order);
+        }
+    }
+
+    protected function isOrderTransferable(OrderEntity $order): bool
+    {
+        $allowedDeliveryMethodIds = $this->systemConfigService->get('EriveDelivery.config.deliveryMethods', $order->getSalesChannelId()) ?? [];
         foreach ($order->getDeliveries()->getShippingMethodIds() as $orderDeliveryMethodId) {
             if (in_array($orderDeliveryMethodId, $allowedDeliveryMethodIds)) {
-                $this->processOrderWithParcelData($order);
-                return;
+                return true;
             }
         }
-
-        $this->log('info', 'Order #' . $order->getOrderNumber() . ' skipped as shipping method is not whitelisted');
+        return false;
     }
 
     protected function log(string $level, string $msg): void
