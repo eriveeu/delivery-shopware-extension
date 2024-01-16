@@ -9,7 +9,6 @@ class ApiClient {
     let baseUrl = "";
     let apiKey = configValues["EriveDelivery.config.apiTestKey"];
     const eriveEnv = configValues["EriveDelivery.config.eriveEnvironment"];
-    const url = "/company/parcelsFrom";
 
     switch (eriveEnv) {
       case "www":
@@ -23,8 +22,42 @@ class ApiClient {
         baseUrl = `https://${eriveEnv}.greentohome.at/api/v1`;
         break;
     }
+
     baseUrl = baseUrl && baseUrl.endsWith("/") ? baseUrl.substring(0, baseUrl.length - 1) : baseUrl;
-    return this.httpClient.get(`${baseUrl}${url}?key=${apiKey}`);
+
+    const testUrl = window.location.origin + "/api/endpoint/test";
+    const headers = { Authorization: "Bearer " + this.readAuthToken(), "Content-Type": "application/json" };
+    const options = { method: "POST", headers, body: JSON.stringify({ baseUrl, apiKey }) };
+    return new Promise((resolve, reject) => {
+      fetch(testUrl, options)
+        .then((result) => {
+          if (result.ok) {
+            return result.json();
+          } else {
+            reject(result);
+          }
+        })
+        .then((response) => {
+          resolve(response);
+        })
+        .catch((e) => {
+          console.error(e);
+          reject(e);
+        });
+    });
+  }
+
+  readAuthToken() {
+    const bearerAuth = document.cookie
+      .split("; ")
+      .find((row) => row.startsWith("bearerAuth="))
+      ?.split("=")[1];
+
+    try {
+      return JSON.parse(decodeURIComponent(bearerAuth))["access"];
+    } catch (e) {
+      return;
+    }
   }
 }
 
