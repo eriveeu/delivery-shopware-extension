@@ -19,7 +19,7 @@ class ConfigListener
     protected const CONFIG_SCHEDULED_TASK_INTERVAL = 'EriveDelivery.config.scheduledTaskInterval';
 
     protected array $configKeys = [
-        self::CONFIG_ENABLE_SCHEDULED_TASK, 
+        self::CONFIG_ENABLE_SCHEDULED_TASK,
         self::CONFIG_SCHEDULED_TASK_INTERVAL
     ];
 
@@ -32,7 +32,6 @@ class ConfigListener
     ) {
         $this->systemConfigService = $systemConfigService;
         $this->scheduledTaskRepository = $scheduledTaskRepository;
-        $this->systemConfigService = $systemConfigService;
     }
 
     public function onConfigChange(BeforeSystemConfigChangedEvent $event): void
@@ -44,7 +43,7 @@ class ConfigListener
         if ($event->getSalesChannelId() !== null) {
             $event->setValue(null);
         }
-        
+
         if ($event->getValue() === null) {
             return;
         }
@@ -56,7 +55,7 @@ class ConfigListener
         $context = Context::createDefaultContext();
         $criteria = new Criteria();
         $criteria->addFilter(new EqualsFilter('name', OrderSubmissionTask::getTaskName()));
-        
+
         $taskId = $this->scheduledTaskRepository->searchIds($criteria, $context)->firstId();
         if (!$taskId) {
             return;
