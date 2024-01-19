@@ -19,6 +19,12 @@
             <tag name="kernel.event_listener" event="state_enter.order_delivery.state.shipped" method="onOrderChangeState" />
         </service>
 
+        <service id="Erive\Delivery\Listener\ConfigListener" >
+            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService" />
+            <argument type="service" id="scheduled_task.repository"/>
+            <tag name="kernel.event_listener" event="Shopware\Core\System\SystemConfig\Event\BeforeSystemConfigChangedEvent" method="onConfigChange" />
+        </service>
+
         <service id="Erive\Delivery\ScheduledTask\OrderSubmission\OrderSubmissionTask">
             <tag name="shopware.scheduled.task" />
         </service>
@@ -35,6 +41,13 @@
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService" />
             <argument type="service" id="order.repository" />
             <argument type="service" id="order_delivery.repository" />
+        </service>
+
+        <service id="Erive\Delivery\Controller\ApiTestController" public="true">
+            <tag name="controller.service_arguments" />
+            <call method="setContainer">
+                <argument type="service" id="service_container" />
+            </call>
         </service>
     </services>
 </container>
