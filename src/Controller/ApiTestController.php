@@ -15,7 +15,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class ApiTestController extends AbstractController
 {
     /** @Route("/api/endpoint/test", name="api.endpoint.test", methods={"POST"}, defaults={"XmlHttpRequest"=true, "_routeScope"={"api"}}) */
-    public function apiEndpointTest(Request $request, Context $context)
+    public function apiEndpointTest(Request $request, Context $context): JsonResponse
     {
         $req = $request->request->all();
         if (empty($req)) {
@@ -54,10 +54,19 @@ class ApiTestController extends AbstractController
         ]);
     }
 
-    protected function apiTest(string $url, string $apiKey)
+    protected function apiTest(string $url, string $apiKey): int
     {
         $client = new \GuzzleHttp\Client();
         $res = $client->request('GET', $url . '?key=' . $apiKey);
         return $res->getStatusCode();
+    }
+
+    protected function error(string $message): JsonResponse
+    {
+        return new JsonResponse([
+            "status" => 400,
+            "success" => false,
+            "message" => $message
+        ]);
     }
 }
