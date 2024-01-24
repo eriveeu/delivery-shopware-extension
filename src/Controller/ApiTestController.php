@@ -31,20 +31,22 @@ class ApiTestController extends AbstractController
         $baseUrl = $req['baseUrl'] . '/company/parcelsFrom';
         $apiKey = $req['apiKey'];
 
-        $apiKeyAccepted = false;
-        $status = 401;
-        $message = "Unauthorized";
-
         try {
-            $res = $this->apiTest($baseUrl, $apiKey); // test API key
-            $apiKeyAccepted = $res === 200;
+            $status = $this->apiTest($baseUrl, $apiKey); // test API key
+            $message = $status === 200 ? "Authorized" : "Unauthorized";
         } catch (\Throwable $th) {
-            $message = $th->getMessage();
-        }
-
-        if ($apiKeyAccepted) {
-            $status = 200;
-            $message = "Authorized";
+            $status = $th->getCode();
+            switch ($status) {
+                case 400:
+                    $message = 'Client error';
+                    break;
+                case 401:
+                    $message = 'Unauthorized';
+                    break;
+                default:
+                    $msg = $th->getMessage();
+                    $message = substr($msg, 0, strpos($msg, ': ') ?: strlen($msg));
+            }
         }
 
         return new JsonResponse([
