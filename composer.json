@@ -29,6 +29,11 @@
       "Erive\\Delivery\\": "src/"
     }
   },
+  "autoload-dev": {
+    "psr-4": {
+      "EriveTests\\Delivery\\": "tests/"
+    }
+  },
   "extra": {
     "shopware-plugin-class": "Erive\\Delivery\\EriveDelivery",
     "copyright": "Erive GmbH",
