@@ -7,3 +7,5 @@
 .DS_Store
 __*
 composer.lock
+phpstan_result*
+*.sh

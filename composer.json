@@ -13,6 +13,10 @@
     "shopware/core": "~6.4.0 || ~6.5.0",
     "eriveeu/delivery-api-client": "^0.1"
   },
+  "require-dev": {
+    "phpstan/phpstan": "*",
+    "phpunit/phpunit": "^10.5"
+  },
   "repositories": [
     {
       "type": "vcs",
@@ -23,6 +27,11 @@
   "autoload": {
     "psr-4": {
       "Erive\\Delivery\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "EriveTests\\Delivery\\": "tests/"
     }
   },
   "extra": {

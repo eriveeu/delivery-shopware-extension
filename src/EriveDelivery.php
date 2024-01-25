@@ -73,6 +73,9 @@ class EriveDelivery extends Plugin
         );
     }
 
+    /**
+     * @return array<mixed>
+     */
     public function getCustomFieldsConfiguration(): array
     {
         return [
