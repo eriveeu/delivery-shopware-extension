@@ -14,6 +14,7 @@ use Symfony\Component\Routing\Annotation\Route;
  */
 class ApiTestController extends AbstractController
 {
+    #[Route('/api/endpoint/test', name: 'api.endpoint.test', methods: ['POST'], defaults: ['XmlHttpRequest' => true, '_routeScope' => ['api']])]
     /** @Route("/api/endpoint/test", name="api.endpoint.test", methods={"POST"}, defaults={"XmlHttpRequest"=true, "_routeScope"={"api"}}) */
     public function apiEndpointTest(Request $request, Context $context): JsonResponse
     {

@@ -6,6 +6,6 @@
 
     <import
       resource="../../Controller/*Controller.php"
-      type="annotation" 
+      type="attribute" 
     />
 </routes>
