@@ -19,24 +19,6 @@
             <tag name="kernel.event_listener" event="state_enter.order_delivery.state.shipped" method="onOrderChangeState" />
         </service>
 
-        <service id="Erive\Delivery\Listener\ConfigListener" >
-            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService" />
-            <argument type="service" id="scheduled_task.repository"/>
-            <tag name="kernel.event_listener" event="Shopware\Core\System\SystemConfig\Event\BeforeSystemConfigChangedEvent" method="onConfigChange" />
-        </service>
-
-        <service id="Erive\Delivery\ScheduledTask\OrderSubmission\OrderSubmissionTask">
-            <tag name="shopware.scheduled.task" />
-        </service>
-
-        <service id="Erive\Delivery\ScheduledTask\OrderSubmission\OrderSubmissionTaskHandler">
-            <argument type="service" id="scheduled_task.repository"/>
-            <argument type="service" id="logger" />
-            <argument type="service" id="Erive\Delivery\Service\OrderService" />
-            <tag name="messenger.message_handler" />
-            <argument type="service" id="monolog.logger"/>
-        </service>
-
         <service id="Erive\Delivery\Service\OrderService">
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService" />
             <argument type="service" id="order.repository" />
