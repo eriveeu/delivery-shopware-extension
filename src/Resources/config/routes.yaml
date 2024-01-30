@@ -5,3 +5,4 @@ api.endpoint.test:
   defaults: 
     _routeScope: 
       - api
+      
