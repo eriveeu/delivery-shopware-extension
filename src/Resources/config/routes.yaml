@@ -1,0 +1,7 @@
+api.endpoint.test:
+  path: /api/endpoint/test
+  controller: Erive\Delivery\Controller\ApiTestController::apiEndpointTest
+  methods: POST
+  defaults: 
+    _routeScope: 
+      - api
