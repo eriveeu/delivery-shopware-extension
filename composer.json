@@ -2,7 +2,7 @@
   "name": "erive/delivery-shopware",
   "description": "ERIVE.delivery",
   "type": "shopware-platform-plugin",
-  "version": "0.3.7",
+  "version": "0.4.0",
   "authors": [
     {
       "name": "Erive GmbH"
@@ -10,7 +10,7 @@
   ],
   "require": {
     "php": ">= 7.4",
-    "shopware/core": "~6.4.0 || ~6.5.0",
+    "shopware/core": "~6.4.0 || ~6.5.0 || ~6.6.0",
     "eriveeu/delivery-api-client": "^0.1"
   },
   "require-dev": {

@@ -6,15 +6,9 @@ use Shopware\Core\Framework\Context;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Routing\Annotation\Route;
 
-/**
- * Class ReturnRouteController
- * @package Erive\Delivery\Controller
- */
 class ApiTestController extends AbstractController
 {
-    /** @Route("/api/endpoint/test", name="api.endpoint.test", methods={"POST"}, defaults={"XmlHttpRequest"=true, "_routeScope"={"api"}}) */
     public function apiEndpointTest(Request $request, Context $context): JsonResponse
     {
         $req = $request->request->all();

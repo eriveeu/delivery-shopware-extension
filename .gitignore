@@ -9,3 +9,4 @@ __*
 composer.lock
 phpstan_result*
 *.sh
+*.cache
