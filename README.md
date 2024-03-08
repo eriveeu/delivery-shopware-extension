@@ -27,7 +27,7 @@ Install using composer or manual installation.
 ### Type 1: Composer
 
 - Add the composer repository url to your composer configuration https://github.com/eriveeu/delivery-shopware-extension.git
-- Install the module by running `composer require eriveeu/delivery-shopware-extension`
+- Install the module by running `composer require erive/delivery-shopware`
 - Enable the module by running `bin/console plugin:install --activate EriveDelivery`
 - Flush the cache by running `bin/console cache:clear`
 
@@ -63,7 +63,7 @@ Configuration fields not mentioned are self-explanatory or shopware default.
 
 ## License
 
-GPL-3.0 License
+MIT License
 See LICENSE.txt for details.
 
 ## Support
