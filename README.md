@@ -63,7 +63,6 @@ Configuration fields not mentioned are self-explanatory or shopware default.
 
 ## License
 
-MIT License
 See LICENSE.txt for details.
 
 ## Support
