@@ -47,23 +47,23 @@ Configuration fields not mentioned are self-explanatory or shopware default.
 
 ### Basic configuration
 
-**Whitelisted delivery methods:** Orders placed with selected delivery methods will be submitted to the ERIVE.delivery platform
+**Whitelisted delivery methods:** Orders placed with selected delivery methods will be submitted to the ERIVE.delivery platform.
 
-**Automatically announce parcel:** Parcel needs to be ready for pickup. Pickup is scheduled
+**Automatically announce parcel:** Parcel needs to be ready for pickup. Pickup is scheduled.
 
-**Print label for each product:** Each product is packaged separately and needs a parcel label
+**Print label for each product:** Each product is packaged separately and needs a parcel label.
 
 ### Environment configuration
 
 **ERIVE Server Enviroment:** ERIVE.delivery offers Dev and Stage enviroments for testing purposes. Select production for live usage.
 
-**Custom API Endpoint:** Endpoint to use if Erive Server Environment is set to custom. e.g. ERIVE on your local machine, test environment
+**Custom API Endpoint:** Endpoint to use if Erive Server Environment is set to custom. e.g. ERIVE on your local machine, test environment.
 
-**API Key:** Request API Key from ERIVE.delivery
+**API Key:** Request API Key from ERIVE.delivery.
 
 ## License
 
-See LICENSE.txt for details.
+See LICENSE for details.
 
 ## Support
 
