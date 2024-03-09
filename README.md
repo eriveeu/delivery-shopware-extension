@@ -11,8 +11,7 @@
 
 ## Introduction
 
-This module adds a custom online shipping method named ERIVE.delivery.
-The creation of a shipment in Shopware automatically triggers the creation of a parcel with status announced in the ERIVE.delivery Cockpit.
+The creation of a shipment in Shopware automatically triggers the creation of a parcel in the ERIVE.delivery Cockpit.
 The tracking url for the shipment is generated automatically.
 
 ## Requirements
